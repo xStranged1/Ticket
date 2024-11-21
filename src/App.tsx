@@ -5,9 +5,10 @@ import Login from './routes/Login'
 import NotFound from './routes/NotFound'
 import CreateTicket from './routes/CreateTicket'
 import DetailTicket from './routes/DetailTicket'
-
+import UserProfile from './routes/UserProfile'
+import Support from './routes/Support'
+import TicketForm from './routes/DetailTicket'
 function App() {
-  const [count, setCount] = useState(0)
 
   // Recordar que tickets necesita barra de busqueda(Relacionados),
   // Campana de notis (TU TICKET A SIDO REVISADO (HORARIO) podes apretar la noti y te lleva al ticket
@@ -20,7 +21,9 @@ function App() {
         <Route path='/login' element={<Login />} />
         <Route path='/tickets' element={<Tickets />} />
         <Route path='/create' element={<CreateTicket />} />
-        <Route path='/ticket/:id' element={<DetailTicket />} />
+        <Route path='/ticket/:id' element={<TicketForm />} />
+        <Route path='/profile' element={<UserProfile />} />
+        <Route path='/support' element={<Support />} />
         <Route path='*' element={<NotFound />} />
       </Routes>
     </>

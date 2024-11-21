@@ -1,82 +1,202 @@
-import { Alert, Button, Input, InputBase } from "@mui/material";
-import { Link } from "react-router-dom";
-import Snackbar, { SnackbarCloseReason } from '@mui/material/Snackbar';
-import { useState } from "react";
+import React, { useState } from "react";
+import {
+    Box,
+    Typography,
+    TextField,
+    Button,
+    IconButton,
+    InputAdornment,
+    Link,
+    Fab,
+} from "@mui/material";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
+import SupportAgentIcon from "@mui/icons-material/SupportAgent";
 import { z } from "zod";
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from "react-hook-form";
-
-export default function Login() {
-
-    const [open, setOpen] = useState(false)
-
-    const handleClick = () => {
-        setOpen(true)
-    }
-
-    const handleClose = () => {
-        setOpen(false)
-    }
-
-    const UserSchema = z.object({
-        email: z.string().email().min(5, { message: "El email debe ser valido" }),
-        password: z.string().min(8, { message: "La contraseña debe tener 8 caracteres o mas" })
-    }).required();
 
 
+const loginSchema = z.object({
+    email: z.string().email("Debe ser un email válido"),
+    password: z
+        .string()
+        .min(8, "La contraseña debe tener al menos 8 caracteres")
+        .regex(/[A-Z]/, "La contraseña debe incluir al menos una letra mayúscula")
+        .regex(/[0-9]/, "La contraseña debe incluir al menos un número"),
+});
 
-    type UserSchema = z.infer<typeof UserSchema>;
+const ExternalLogin: React.FC = () => {
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
+    const [errors, setErrors] = useState<{ email?: string; password?: string }>(
+        {}
+    );
 
 
-    const { register, handleSubmit, formState: { errors } } = useForm({
-        resolver: zodResolver(UserSchema)
-    });
+    const handleClickShowPassword = () => setShowPassword(!showPassword);
 
-    const onSubmit = (data: any) => {
-        console.log(data);
+    const handleMouseDownPassword = (
+        event: React.MouseEvent<HTMLButtonElement>
+    ) => {
+        event.preventDefault();
     };
 
 
-    const arr = [1, 4, 2122]
+    const validateForm = () => {
+        try {
+            loginSchema.parse({ email, password });
+            setErrors({});
+            return true;
+        } catch (e) {
+            if (e instanceof z.ZodError) {
+                const fieldErrors: { [key: string]: string } = {};
+                e.errors.forEach((error) => {
+                    const field = error.path[0] as string;
+                    fieldErrors[field] = error.message;
+                });
+                setErrors(fieldErrors);
+            }
+            return false;
+        }
+    };
 
-    arr[1] = 1
+    const handleLogin = () => {
+        if (validateForm()) {
+            console.log("Iniciar sesión con:", { email, password });
+
+        }
+    };
+
+
+    const handleSupportRedirect = () => {
+        window.location.href = "/support";
+    };
 
     return (
-        <div>
-            <h1>Login</h1>
-            <Button onClick={handleClick}>Open Snackbar</Button>
-            <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
-                <Alert
-                    onClose={handleClose}
-                    severity="error"
-                    variant="filled"
-                    sx={{ width: '100%' }}
+        <Box
+            sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                minHeight: "100vh",
+                backgroundColor: "#f5f5f5",
+                position: "relative",
+            }}
+        >
+            <Box
+                sx={{
+                    width: "100%",
+                    maxWidth: "400px",
+                    backgroundColor: "white",
+                    p: 4,
+                    borderRadius: 2,
+                    boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+                }}
+            >
+                <Typography
+                    variant="h5"
+                    sx={{
+                        textAlign: "center",
+                        mb: 3,
+                        fontWeight: "bold",
+                        color: "#333",
+                    }}
                 >
-                    This is a success Alert inside a Snackbar!
-                </Alert>
-            </Snackbar>
+                    Iniciar Sesión
+                </Typography>
 
 
-            <form onSubmit={handleSubmit(onSubmit)}>
-                <div>
-                    <label>Email:</label>
-                    <Input value={register('email')} />
-                    {errors.email && <span>{errors.email.message}</span>}
-                </div>
+                <TextField
+                    label="Email"
+                    variant="outlined"
+                    fullWidth
+                    type="email"
+                    placeholder="Ingresá tu email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    sx={{ mb: 2 }}
+                    error={!!errors.email}
+                    helperText={errors.email}
+                />
 
-                <div>
-                    <label>Contraseña:</label>
+
+                <TextField
+                    label="Contraseña"
+                    variant="outlined"
+                    fullWidth
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Ingresá tu contraseña"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    sx={{ mb: 2 }}
+                    error={!!errors.password}
+                    helperText={errors.password}
+                    InputProps={{
+                        endAdornment: (
+                            <InputAdornment position="end">
+                                <IconButton
+                                    onClick={handleClickShowPassword}
+                                    onMouseDown={handleMouseDownPassword}
+                                    edge="end"
+                                >
+                                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                                </IconButton>
+                            </InputAdornment>
+                        ),
+                    }}
+                />
 
 
-                    <input type="password" {...register('password')} />
-                    {errors.password && <span>{errors.password.message}</span>}
-                </div>
+                <Button
+                    variant="contained"
+                    fullWidth
+                    onClick={handleLogin}
+                    sx={{
+                        backgroundColor: "#4caf50",
+                        color: "white",
+                        fontWeight: "bold",
+                        "&:hover": {
+                            backgroundColor: "#45a049",
+                        },
+                    }}
+                >
+                    Iniciar sesión
+                </Button>
 
-                <button type="submit">Enviar</button>
-            </form>
 
-            <Button variant="contained">Hello world</Button>
-            <Link to='/tickets'>Ir a tickets</Link>
-        </div>
-    )
-}
+                <Typography
+                    variant="body2"
+                    sx={{
+                        mt: 2,
+                        textAlign: "center",
+                        color: "#333",
+                    }}
+                >
+                    <Link href="#" underline="none">
+                        ¿Olvidaste tu contraseña?
+                    </Link>
+                </Typography>
+            </Box>
+
+
+            <Fab
+                color="primary"
+                aria-label="Soporte"
+                onClick={handleSupportRedirect}
+                sx={{
+                    position: "absolute",
+                    bottom: 20,
+                    right: 20,
+                    backgroundColor: "#2196f3",
+                    "&:hover": {
+                        backgroundColor: "#1976d2",
+                    },
+                }}
+            >
+                <SupportAgentIcon />
+            </Fab>
+        </Box>
+    );
+};
+
+export default ExternalLogin;
