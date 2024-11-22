@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { alpha } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -12,106 +11,24 @@ import TableSortLabel from '@mui/material/TableSortLabel';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
-import Checkbox from '@mui/material/Checkbox';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
-import FilterListIcon from '@mui/icons-material/FilterList';
 import { visuallyHidden } from '@mui/utils';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from '@mui/material';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
-interface Data {
-    code: string;
-    id: number;
-    issue: string;
-    date: string;
-    priority: 'Muy alta' | 'Alta' | 'Media' | 'Baja'
-}
+import { rows } from '../const/dummyData';
+import { Priority, Ticket } from '../types/types';
 
-const rows = [
-    { code: "C001", id: 1, issue: "Error en el sistema", date: "11/01/2024", priority: "Muy alta" },
-    { code: "C002", id: 2, issue: "Problema de conectividad", date: "11/02/2024", priority: "Alta" },
-    { code: "C003", id: 3, issue: "Falla de hardware", date: "11/03/2024", priority: "Media" },
-    { code: "C004", id: 4, issue: "Requerimiento de actualización", date: "11/04/2024", priority: "Baja" },
-    { code: "C005", id: 5, issue: "Solicitud de soporte", date: "11/05/2024", priority: "Alta" },
-    { code: "C006", id: 6, issue: "Incidencia de red", date: "11/06/2024", priority: "Muy alta" },
-    { code: "C007", id: 7, issue: "Problema de seguridad", date: "11/07/2024", priority: "Alta" },
-    { code: "C008", id: 8, issue: "Rendimiento lento", date: "11/08/2024", priority: "Media" },
-    { code: "C009", id: 9, issue: "Falta de recursos", date: "11/09/2024", priority: "Baja" },
-    { code: "C010", id: 10, issue: "Fallo en la base de datos", date: "11/10/2024", priority: "Muy alta" },
-    { code: "C011", id: 11, issue: "Error en el sistema", date: "11/11/2024", priority: "Alta" },
-    { code: "C012", id: 12, issue: "Problema de conectividad", date: "11/12/2024", priority: "Media" },
-    { code: "C013", id: 13, issue: "Falla de hardware", date: "11/13/2024", priority: "Baja" },
-    { code: "C014", id: 14, issue: "Requerimiento de actualización", date: "11/14/2024", priority: "Alta" },
-    { code: "C015", id: 15, issue: "Solicitud de soporte", date: "11/15/2024", priority: "Muy alta" },
-    { code: "C016", id: 16, issue: "Incidencia de red", date: "11/16/2024", priority: "Alta" },
-    { code: "C017", id: 17, issue: "Problema de seguridad", date: "11/17/2024", priority: "Media" },
-    { code: "C018", id: 18, issue: "Rendimiento lento", date: "11/18/2024", priority: "Baja" },
-    { code: "C019", id: 19, issue: "Falta de recursos", date: "11/19/2024", priority: "Muy alta" },
-    { code: "C020", id: 20, issue: "Fallo en la base de datos", date: "11/20/2024", priority: "Alta" },
-    { code: "C021", id: 21, issue: "Error en el sistema", date: "11/21/2024", priority: "Media" },
-    { code: "C022", id: 22, issue: "Problema de conectividad", date: "11/22/2024", priority: "Baja" },
-    { code: "C023", id: 23, issue: "Falla de hardware", date: "11/23/2024", priority: "Alta" },
-    { code: "C024", id: 24, issue: "Requerimiento de actualización", date: "11/24/2024", priority: "Muy alta" },
-    { code: "C025", id: 25, issue: "Solicitud de soporte", date: "11/25/2024", priority: "Alta" },
-    { code: "C026", id: 26, issue: "Incidencia de red", date: "11/26/2024", priority: "Media" },
-    { code: "C027", id: 27, issue: "Problema de seguridad", date: "11/27/2024", priority: "Baja" },
-    { code: "C028", id: 28, issue: "Rendimiento lento", date: "11/28/2024", priority: "Muy alta" },
-    { code: "C029", id: 29, issue: "Falta de recursos", date: "11/29/2024", priority: "Alta" },
-    { code: "C030", id: 30, issue: "Fallo en la base de datos", date: "11/30/2024", priority: "Media" },
-    { code: "C031", id: 31, issue: "Error en el sistema", date: "12/01/2024", priority: "Baja" },
-    { code: "C032", id: 32, issue: "Problema de conectividad", date: "12/02/2024", priority: "Muy alta" },
-    { code: "C033", id: 33, issue: "Falla de hardware", date: "12/03/2024", priority: "Alta" },
-    { code: "C034", id: 34, issue: "Requerimiento de actualización", date: "12/04/2024", priority: "Media" },
-    { code: "C035", id: 35, issue: "Solicitud de soporte", date: "12/05/2024", priority: "Baja" },
-    { code: "C036", id: 36, issue: "Incidencia de red", date: "12/06/2024", priority: "Muy alta" },
-    { code: "C037", id: 37, issue: "Problema de seguridad", date: "12/07/2024", priority: "Alta" },
-    { code: "C038", id: 38, issue: "Rendimiento lento", date: "12/08/2024", priority: "Media" },
-    { code: "C039", id: 39, issue: "Falta de recursos", date: "12/09/2024", priority: "Baja" },
-    { code: "C040", id: 40, issue: "Fallo en la base de datos", date: "12/10/2024", priority: "Muy alta" },
-    { code: "C041", id: 41, issue: "Error en el sistema", date: "12/11/2024", priority: "Alta" },
-    { code: "C042", id: 42, issue: "Problema de conectividad", date: "12/12/2024", priority: "Media" },
-    { code: "C043", id: 43, issue: "Falla de hardware", date: "12/13/2024", priority: "Baja" },
-    { code: "C044", id: 44, issue: "Requerimiento de actualización", date: "12/14/2024", priority: "Alta" },
-    { code: "C045", id: 45, issue: "Solicitud de soporte", date: "12/15/2024", priority: "Muy alta" },
-    { code: "C046", id: 46, issue: "Incidencia de red", date: "12/16/2024", priority: "Alta" },
-    { code: "C047", id: 47, issue: "Problema de seguridad", date: "12/17/2024", priority: "Media" },
-    { code: "C048", id: 48, issue: "Rendimiento lento", date: "12/18/2024", priority: "Baja" },
-    { code: "C049", id: 49, issue: "Falta de recursos", date: "12/19/2024", priority: "Muy alta" },
-    { code: "C050", id: 50, issue: "Fallo en la base de datos", date: "12/20/2024", priority: "Alta" }
-];
-
-function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
-    if (b[orderBy] < a[orderBy]) {
-        return -1;
-    }
-    if (b[orderBy] > a[orderBy]) {
-        return 1;
-    }
-    return 0;
-}
 
 type Order = 'asc' | 'desc';
 
-function getComparator<Key extends keyof any>(
-    order: Order,
-    orderBy: Key,
-): (
-    a: { [key in Key]: number | string },
-    b: { [key in Key]: number | string },
-) => number {
-    return order === 'desc'
-        ? (a, b) => descendingComparator(a, b, orderBy)
-        : (a, b) => -descendingComparator(a, b, orderBy);
-}
-
 interface HeadCell {
     disablePadding: boolean;
-    id: keyof Data;
+    id: keyof Ticket;
     label: string;
     numeric: boolean;
-
 }
 
 const headCells: readonly HeadCell[] = [
@@ -143,7 +60,7 @@ const headCells: readonly HeadCell[] = [
 
 interface EnhancedTableProps {
     numSelected: number;
-    onRequestSort: (event: React.MouseEvent<unknown>, property: keyof Data) => void;
+    onRequestSort: (event: React.MouseEvent<unknown>, property: keyof Ticket) => void;
     onSelectAllClick: (event: React.ChangeEvent<HTMLInputElement>) => void;
     order: Order;
     orderBy: string;
@@ -151,12 +68,10 @@ interface EnhancedTableProps {
 }
 
 function EnhancedTableHead(props: EnhancedTableProps) {
-    const { onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } =
-        props;
-    const createSortHandler =
-        (property: keyof Data) => (event: React.MouseEvent<unknown>) => {
-            onRequestSort(event, property);
-        };
+    const { order, orderBy, onRequestSort } = props;
+    const createSortHandler = (property: keyof Ticket) => (event: React.MouseEvent<unknown>) => {
+        onRequestSort(event, property);
+    };
 
     return (
         <TableHead>
@@ -202,61 +117,30 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
                 {
                     pl: { sm: 2 },
                     pr: { xs: 1, sm: 1 },
-                },
-                numSelected > 0 && {
-                    bgcolor: (theme) =>
-                        alpha(theme.palette.primary.main, theme.palette.action.activatedOpacity),
-                },
+                }
             ]}
         >
-            {numSelected > 0 ? (
-                <Typography
-                    sx={{ flex: '1 1 100%' }}
-                    color="inherit"
-                    variant="subtitle1"
-                    component="div"
-                >
-                    {numSelected} selected
-                </Typography>
-            ) : (
-                <Typography
-                    sx={{ flex: '1 1 100%', textAlign: 'left' }}
-                    variant="h6"
-                    id="tableTitle"
-                    component="div"
-                >
-                    Requerimientos
-                </Typography>
-            )}
-            {numSelected > 0 ? (
-                <Tooltip title="Delete">
-                    <IconButton>
-                        <DeleteIcon />
-                    </IconButton>
-                </Tooltip>
-            ) : (
-                <Tooltip title="Filter list">
-                    <IconButton>
-                        <FilterListIcon />
-                    </IconButton>
-                </Tooltip>
-            )}
+            <Typography
+                sx={{ flex: '1 1 100%', textAlign: 'left' }}
+                variant="h6"
+                id="tableTitle"
+                component="div"
+            >
+                Requerimientos
+            </Typography>
         </Toolbar>
     );
 }
 
 export default function Tickets() {
     const [order, setOrder] = React.useState<Order>('asc');
-    const [orderBy, setOrderBy] = React.useState<keyof Data>('issue');
+    const [orderBy, setOrderBy] = React.useState<keyof Ticket>('issue');
     const [selected, setSelected] = React.useState<readonly number[]>([]);
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
     const [searchTerm, setSearchTerm] = React.useState('');
 
-    const handleRequestSort = (
-        _event: React.MouseEvent<unknown>,
-        property: keyof Data,
-    ) => {
+    const handleRequestSort = (_event: React.MouseEvent<unknown>, property: keyof Ticket) => {
         const isAsc = orderBy === property && order === 'asc';
         setOrder(isAsc ? 'desc' : 'asc');
         setOrderBy(property);
@@ -288,6 +172,7 @@ export default function Tickets() {
             );
         }
         setSelected(newSelected);
+        window.location.href = `/ticket/${id}`;
     };
 
     const handleChangePage = (_event: unknown, newPage: number) => {
@@ -313,13 +198,30 @@ export default function Tickets() {
         row.issue.toLowerCase().includes(searchTerm),
     );
 
+    const priorityValue: Record<Priority, number> = {
+        'Muy alta': 4,
+        'Alta': 3,
+        'Media': 2,
+        'Baja': 1,
+    };
+
     const sortedRows = React.useMemo(
         () =>
             [...filteredRows].sort((a, b) => {
-                if (order === 'asc') {
-                    return a[orderBy] > b[orderBy] ? 1 : -1;
+                if (orderBy === 'priority') {
+                    console.log('Ordenando por prioridad');
+
+                    if (order === 'asc') {
+                        return priorityValue[a.priority] - priorityValue[b.priority];
+                    } else {
+                        return priorityValue[b.priority] - priorityValue[a.priority];
+                    }
                 } else {
-                    return a[orderBy] < b[orderBy] ? 1 : -1;
+                    if (order === 'asc') {
+                        return a[orderBy] > b[orderBy] ? 1 : -1;
+                    } else {
+                        return a[orderBy] < b[orderBy] ? 1 : -1;
+                    }
                 }
             }),
         [filteredRows, order, orderBy],
@@ -340,7 +242,7 @@ export default function Tickets() {
     };
 
     return (
-        <Box sx={{ width: '100%' }}>
+        <Box sx={{ width: '100%', flex: 1, flexDirection: 'row', justifySelf: 'center', justifyContent: 'center', alignItems: 'center', backgroundColor: "#ccc" }}>
             <Dialog
                 open={open}
                 onClose={handleClose}
@@ -362,7 +264,7 @@ export default function Tickets() {
                     </Button>
                 </DialogActions>
             </Dialog>
-            <Paper sx={{ width: '100%', mb: 2 }}>
+            <Paper sx={{ width: '100%' }}>
                 <EnhancedTableToolbar numSelected={selected.length} />
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
                     <div style={{ flex: 1, display: 'flex', justifyContent: 'center', marginLeft: 15 }}>
@@ -405,6 +307,7 @@ export default function Tickets() {
 
                                 return (
                                     <TableRow
+                                        style={{ cursor: 'pointer' }}
                                         hover
                                         onClick={(event) => handleClick(event, row.id)}
                                         role="checkbox"
@@ -430,7 +333,7 @@ export default function Tickets() {
                                                         alert(`Detalles del requerimiento ID: ${row.id}`);
                                                     }}
                                                 >
-                                                    <VisibilityIcon />
+                                                    <VisibilityIcon color='action' />
                                                 </IconButton>
                                             </Tooltip>
                                         </TableCell>
@@ -439,7 +342,7 @@ export default function Tickets() {
                                                 <IconButton onClick={() => {
                                                     alert(`Detalles del requerimiento ID: ${row.id}`);
                                                 }}>
-                                                    <EditIcon />
+                                                    <EditIcon color='primary' />
                                                 </IconButton>
                                             </Tooltip>
                                         </TableCell>
@@ -453,7 +356,7 @@ export default function Tickets() {
                                                         handleClickOpen();
                                                     }}
                                                 >
-                                                    <DeleteIcon />
+                                                    <DeleteIcon color='error' />
                                                 </IconButton>
                                             </Tooltip>
                                         </TableCell>

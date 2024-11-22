@@ -35,7 +35,7 @@ export default function CreateTicket() {
                 mt: 5,
                 p: 3,
                 boxShadow: 3,
-                backgroundColor: "white",
+                bgcolor: 'background.default',
                 borderRadius: 2,
             }}
         >

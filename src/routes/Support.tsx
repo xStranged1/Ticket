@@ -9,10 +9,6 @@ interface FormProps {
 }
 
 
-
-
-
-
 const Form: React.FC<FormProps> = ({ onSubmit }) => {
     const [description, setDescription] = React.useState('');
     const [files, setFiles] = React.useState<File[]>([]);

@@ -13,6 +13,7 @@ import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import SupportAgentIcon from "@mui/icons-material/SupportAgent";
 import { z } from "zod";
+import { useTheme } from "@emotion/react";
 
 
 const loginSchema = z.object({
@@ -24,6 +25,8 @@ const loginSchema = z.object({
         .regex(/[0-9]/, "La contraseña debe incluir al menos un número"),
 });
 
+
+
 const ExternalLogin: React.FC = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -31,6 +34,10 @@ const ExternalLogin: React.FC = () => {
     const [errors, setErrors] = useState<{ email?: string; password?: string }>(
         {}
     );
+    const theme = useTheme(); // Acceder al tema
+
+    console.log(theme);
+    console.log(theme.palette);
 
 
     const handleClickShowPassword = () => setShowPassword(!showPassword);
@@ -79,7 +86,7 @@ const ExternalLogin: React.FC = () => {
                 justifyContent: "center",
                 alignItems: "center",
                 minHeight: "100vh",
-                backgroundColor: "#f5f5f5",
+                bgcolor: 'background.default',
                 position: "relative",
             }}
         >
@@ -87,9 +94,9 @@ const ExternalLogin: React.FC = () => {
                 sx={{
                     width: "100%",
                     maxWidth: "400px",
-                    backgroundColor: "white",
                     p: 4,
                     borderRadius: 2,
+                    bgcolor: 'background.secondary',
                     boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
                 }}
             >

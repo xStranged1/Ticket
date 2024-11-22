@@ -1,18 +1,6 @@
 import React from "react";
 import {
-    Box,
-    TextField,
-    Typography,
-    Button,
-    Select,
-    MenuItem,
-    InputLabel,
-    FormControl,
-    Grid,
-    IconButton,
-    List,
-    ListItem,
-    ListItemText,
+    Box, TextField, Typography, Button, Select, MenuItem, InputLabel, FormControl, Grid, IconButton, List, ListItem, ListItemText,
 } from "@mui/material";
 import UploadFileIcon from "@mui/icons-material/UploadFile";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -34,7 +22,7 @@ interface TicketFormProps {
     }) => void;
 }
 
-const TicketForm: React.FC<TicketFormProps> = ({ onSubmit }) => {
+const DetailTicket: React.FC<TicketFormProps> = ({ onSubmit }) => {
     const [formData, setFormData] = React.useState({
         subject: '',
         description: '',
@@ -264,4 +252,4 @@ const TicketForm: React.FC<TicketFormProps> = ({ onSubmit }) => {
     );
 };
 
-export default TicketForm;
+export default DetailTicket;
