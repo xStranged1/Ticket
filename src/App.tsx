@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useMemo } from 'react'
 import { Route, Routes } from 'react-router-dom'
 import Tickets from './routes/Tickets'
 import Login from './routes/Login'
@@ -7,9 +7,8 @@ import CreateTicket from './routes/CreateTicket'
 import DetailTicket from './routes/DetailTicket'
 import UserProfile from './routes/UserProfile'
 import Support from './routes/Support'
-import TicketForm from './routes/DetailTicket'
 import { ThemeProvider } from '@mui/material/styles';
-import { CssBaseline, useColorScheme } from '@mui/material'
+import { CssBaseline, useMediaQuery } from '@mui/material'
 import { darkTheme, lightTheme } from './const/colors'
 
 function App() {
@@ -17,11 +16,13 @@ function App() {
   // Recordar que tickets necesita barra de busqueda(Relacionados),
   // Campana de notis (TU TICKET A SIDO REVISADO (HORARIO) podes apretar la noti y te lleva al ticket
   // boton eliminar con confirmacion, y podemos agregar un zoom al pasar el mouse sobre una tarjeta 
-  const { mode } = useColorScheme()
+  const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
+
+  const theme = useMemo(() => prefersDarkMode ? darkTheme : lightTheme, [prefersDarkMode]);
 
   return (
     <>
-      <ThemeProvider theme={mode == 'dark' || mode == 'system' ? darkTheme : lightTheme}>
+      <ThemeProvider theme={theme}>
         <CssBaseline /> {/* Aplica los estilos globales */}
         <Routes>
           <Route path='/' element={<Login />} />

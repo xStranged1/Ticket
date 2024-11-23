@@ -24,8 +24,12 @@ export const darkTheme = createTheme({
         background: {
             default: '#333333', // Fondo gris oscuro para el tema oscuro
         },
+        primary: {
+            main: '#3fb55d',
+        },
         secondary: {
-            main: '#e7e7e7'
-        }
+            main: '#f50057',
+        },
+
     },
 });

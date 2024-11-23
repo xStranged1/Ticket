@@ -10,6 +10,7 @@ import {
     FormControl,
     Grid,
     IconButton,
+    Paper,
 } from "@mui/material";
 
 import UploadFileIcon from "@mui/icons-material/UploadFile";
@@ -28,14 +29,14 @@ export default function CreateTicket() {
     };
 
     return (
-        <Box
+        <Paper
             sx={{
                 width: "auto",
                 margin: "auto",
                 mt: 5,
                 p: 3,
-                boxShadow: 3,
-                bgcolor: 'background.default',
+                mb: 5,
+                bgcolor: 'background.main',
                 borderRadius: 2,
             }}
         >
@@ -135,7 +136,7 @@ export default function CreateTicket() {
                     </Button>
                 </Grid>
             </Grid>
-        </Box>
+        </Paper>
     );
 };
 

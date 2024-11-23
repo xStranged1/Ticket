@@ -106,11 +106,8 @@ function EnhancedTableHead(props: EnhancedTableProps) {
         </TableHead>
     );
 }
-interface EnhancedTableToolbarProps {
-    numSelected: number;
-}
-function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
-    const { numSelected } = props;
+function EnhancedTableToolbar() {
+
     return (
         <Toolbar
             sx={[
@@ -242,7 +239,7 @@ export default function Tickets() {
     };
 
     return (
-        <Box sx={{ width: '100%', flex: 1, flexDirection: 'row', justifySelf: 'center', justifyContent: 'center', alignItems: 'center', backgroundColor: "#ccc" }}>
+        <Paper sx={{ width: '100%', flex: 1, flexDirection: 'row', justifySelf: 'center', justifyContent: 'center', alignItems: 'center', backgroundColor: "#ccc" }}>
             <Dialog
                 open={open}
                 onClose={handleClose}
@@ -265,7 +262,7 @@ export default function Tickets() {
                 </DialogActions>
             </Dialog>
             <Paper sx={{ width: '100%' }}>
-                <EnhancedTableToolbar numSelected={selected.length} />
+                <EnhancedTableToolbar />
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
                     <div style={{ flex: 1, display: 'flex', justifyContent: 'center', marginLeft: 15 }}>
                         <TextField
@@ -387,6 +384,6 @@ export default function Tickets() {
                     onRowsPerPageChange={handleChangeRowsPerPage}
                 />
             </Paper>
-        </Box>
+        </Paper>
     );
 }

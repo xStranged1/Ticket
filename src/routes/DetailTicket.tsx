@@ -4,7 +4,6 @@ import {
 } from "@mui/material";
 import UploadFileIcon from "@mui/icons-material/UploadFile";
 import DeleteIcon from "@mui/icons-material/Delete";
-import EditIcon from "@mui/icons-material/Edit";
 
 interface TicketFormProps {
     onSubmit: (formData: {

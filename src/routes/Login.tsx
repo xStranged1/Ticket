@@ -8,6 +8,7 @@ import {
     InputAdornment,
     Link,
     Fab,
+    Paper,
 } from "@mui/material";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
@@ -31,14 +32,7 @@ const ExternalLogin: React.FC = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
-    const [errors, setErrors] = useState<{ email?: string; password?: string }>(
-        {}
-    );
-    const theme = useTheme(); // Acceder al tema
-
-    console.log(theme);
-    console.log(theme.palette);
-
+    const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
 
     const handleClickShowPassword = () => setShowPassword(!showPassword);
 
@@ -90,13 +84,12 @@ const ExternalLogin: React.FC = () => {
                 position: "relative",
             }}
         >
-            <Box
+            <Paper
                 sx={{
                     width: "100%",
                     maxWidth: "400px",
                     p: 4,
                     borderRadius: 2,
-                    bgcolor: 'background.secondary',
                     boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
                 }}
             >
@@ -106,7 +99,7 @@ const ExternalLogin: React.FC = () => {
                         textAlign: "center",
                         mb: 3,
                         fontWeight: "bold",
-                        color: "#333",
+                        color: "Text",
                     }}
                 >
                     Iniciar Sesión
@@ -183,7 +176,7 @@ const ExternalLogin: React.FC = () => {
                         ¿Olvidaste tu contraseña?
                     </Link>
                 </Typography>
-            </Box>
+            </Paper>
 
 
             <Fab
