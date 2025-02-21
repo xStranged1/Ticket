@@ -20,6 +20,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import { rows } from '../const/dummyData';
 import { Priority, Ticket } from '../types/types';
+import { useNavigate } from 'react-router-dom';
 
 
 type Order = 'asc' | 'desc';
@@ -130,12 +131,14 @@ function EnhancedTableToolbar() {
 }
 
 export default function Tickets() {
+
     const [order, setOrder] = React.useState<Order>('asc');
     const [orderBy, setOrderBy] = React.useState<keyof Ticket>('issue');
     const [selected, setSelected] = React.useState<readonly number[]>([]);
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
     const [searchTerm, setSearchTerm] = React.useState('');
+    const navigate = useNavigate();
 
     const handleRequestSort = (_event: React.MouseEvent<unknown>, property: keyof Ticket) => {
         const isAsc = orderBy === property && order === 'asc';
@@ -327,7 +330,7 @@ export default function Tickets() {
                                                 <IconButton
                                                     onClick={(event) => {
                                                         event.stopPropagation();
-                                                        alert(`Detalles del requerimiento ID: ${row.id}`);
+                                                        navigate(`/ticket/${row.id}`)
                                                     }}
                                                 >
                                                     <VisibilityIcon color='action' />
@@ -336,8 +339,9 @@ export default function Tickets() {
                                         </TableCell>
                                         <TableCell padding="checkbox">
                                             <Tooltip title="Modificar">
-                                                <IconButton onClick={() => {
-                                                    alert(`Detalles del requerimiento ID: ${row.id}`);
+                                                <IconButton onClick={(event) => {
+                                                    event.stopPropagation();
+                                                    navigate(`/ticket/${row.id}?editing=true`)
                                                 }}>
                                                     <EditIcon color='primary' />
                                                 </IconButton>

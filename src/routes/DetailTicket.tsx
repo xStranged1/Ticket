@@ -4,6 +4,7 @@ import {
 } from "@mui/material";
 import UploadFileIcon from "@mui/icons-material/UploadFile";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { useSearchParams } from "react-router-dom";
 
 interface TicketFormProps {
     onSubmit: (formData: {
@@ -21,7 +22,8 @@ interface TicketFormProps {
     }) => void;
 }
 
-const DetailTicket: React.FC<TicketFormProps> = ({ onSubmit }) => {
+export const DetailTicket: React.FC<TicketFormProps> = ({ onSubmit }) => {
+
     const [formData, setFormData] = React.useState({
         subject: '',
         description: '',
@@ -36,7 +38,10 @@ const DetailTicket: React.FC<TicketFormProps> = ({ onSubmit }) => {
         comment: '',
     });
 
-    const [isEditing, setIsEditing] = React.useState(false);
+    let [searchParams] = useSearchParams();
+    const editing = searchParams.get('editing')
+    const initialIsEditing = editing === 'true';
+    const [isEditing, setIsEditing] = React.useState(initialIsEditing);
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | { name?: string; value: unknown }>) => {
         const { name, value } = event.target;
@@ -250,5 +255,3 @@ const DetailTicket: React.FC<TicketFormProps> = ({ onSubmit }) => {
         </Box >
     );
 };
-
-export default DetailTicket;

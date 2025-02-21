@@ -4,12 +4,12 @@ import Tickets from './routes/Tickets'
 import Login from './routes/Login'
 import NotFound from './routes/NotFound'
 import CreateTicket from './routes/CreateTicket'
-import DetailTicket from './routes/DetailTicket'
 import UserProfile from './routes/UserProfile'
 import Support from './routes/Support'
 import { ThemeProvider } from '@mui/material/styles';
 import { CssBaseline, useMediaQuery } from '@mui/material'
 import { darkTheme, lightTheme } from './const/colors'
+import { DetailTicket } from './routes/DetailTicket'
 
 function App() {
 
