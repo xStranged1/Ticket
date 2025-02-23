@@ -20,7 +20,8 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import { rows } from '../const/dummyData';
 import { Priority, Ticket } from '../types/types';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import AccountBoxIcon from '@mui/icons-material/AccountBox';
 
 
 type Order = 'asc' | 'desc';
@@ -108,6 +109,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
     );
 }
 function EnhancedTableToolbar() {
+    const idUser = 13
 
     return (
         <Toolbar
@@ -126,7 +128,18 @@ function EnhancedTableToolbar() {
             >
                 Requerimientos
             </Typography>
-        </Toolbar>
+            <a style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', textDecoration: 'none' }} href={`/profile/${idUser}`}>
+                <AccountBoxIcon fontSize='large' />
+                <Typography
+                    sx={{ textAlign: 'right', textWrap: 'nowrap', marginLeft: 1, marginRight: 1 }}
+                    variant="h6"
+                    id="tableTitle"
+                >
+                    Romeo kai
+                </Typography>
+            </a>
+
+        </Toolbar >
     );
 }
 
@@ -242,7 +255,7 @@ export default function Tickets() {
     };
 
     return (
-        <Paper sx={{ width: '100%', flex: 1, flexDirection: 'row', justifySelf: 'center', justifyContent: 'center', alignItems: 'center', backgroundColor: "#ccc" }}>
+        <Paper sx={{ width: '100%', flex: 1, flexDirection: 'row', justifySelf: 'center', justifyContent: 'center', alignItems: 'center', backgroundColor: "#ccc", marginTop: 5 }}>
             <Dialog
                 open={open}
                 onClose={handleClose}

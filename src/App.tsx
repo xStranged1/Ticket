@@ -30,7 +30,7 @@ function App() {
           <Route path='/tickets' element={<Tickets />} />
           <Route path='/create' element={<CreateTicket />} />
           <Route path='/ticket/:id' element={<DetailTicket />} />
-          <Route path='/profile' element={<UserProfile />} />
+          <Route path='/profile/:id' element={<UserProfile />} />
           <Route path='/support' element={<Support />} />
           <Route path='*' element={<NotFound />} />
         </Routes>

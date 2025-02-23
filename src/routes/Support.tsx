@@ -52,7 +52,8 @@ const Form: React.FC<FormProps> = ({ onSubmit }) => {
             <TextField
                 id="outlined-multiline-static"
                 label="Escribe los detalles..."
-                sx={{ width: '100%', bgcolor: 'white', borderRadius: 1 }}
+                sx={{ width: '100%', bgcolor: 'white', borderRadius: 1, color: '#010101' }}
+                InputProps={{ style: { color: "#010101" } }}
                 multiline
                 rows={4}
                 value={description}

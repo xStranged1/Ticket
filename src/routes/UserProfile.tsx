@@ -10,12 +10,14 @@ import {
     Tooltip,
 } from "@mui/material";
 import StarIcon from "@mui/icons-material/Star";
+import { useParams } from "react-router-dom";
 
 const UserProfile: React.FC = () => {
 
+    let { id } = useParams();
     const [isEditing, setIsEditing] = useState(false);
-
     const [profile, setProfile] = useState({
+        id,
         nombre: "Romeo",
         apellido: "Monfroglio",
         email: "romeokai@gmail.com",
@@ -35,7 +37,6 @@ const UserProfile: React.FC = () => {
     return (
         <Box
             sx={{
-                backgroundColor: "#f5f5f5",
                 minHeight: "100vh",
                 p: 3,
             }}
@@ -45,7 +46,7 @@ const UserProfile: React.FC = () => {
                     maxWidth: "800px",
                     margin: "auto",
                     p: 3,
-                    backgroundColor: "white",
+                    bgcolor: 'background.paper',
                     boxShadow: 3,
                     borderRadius: 2,
                 }}
@@ -64,7 +65,7 @@ const UserProfile: React.FC = () => {
                                 textAlign: "center",
                                 borderRadius: 2,
                                 p: 3,
-                                backgroundColor: "#f9f9f9",
+                                bgcolor: 'background.default',
                                 position: "relative",
                             }}
                         >

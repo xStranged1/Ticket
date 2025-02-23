@@ -113,6 +113,7 @@ const ExternalLogin: React.FC = () => {
                         error={!!errors.email}
                         helperText={errors.email}
                         InputProps={{ style: { color: "black" } }}
+                        InputLabelProps={{ style: { color: "#9f9f9f" } }}
                     />
 
                     <TextField
@@ -137,6 +138,7 @@ const ExternalLogin: React.FC = () => {
                                 </InputAdornment>
                             ),
                         }}
+                        InputLabelProps={{ style: { color: "#9f9f9f" } }}
                     />
 
                     <motion.div whileHover={{ scale: 1.05 }}>
@@ -169,7 +171,6 @@ const ExternalLogin: React.FC = () => {
                     aria-label="Soporte"
                     onClick={() => (window.location.href = "/support")}
                     sx={{
-                        
                         bottom: 20,
                         right: 20,
                         backgroundColor: "#2196f3",

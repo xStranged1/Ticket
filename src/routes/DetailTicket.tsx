@@ -4,7 +4,7 @@ import {
 } from "@mui/material";
 import UploadFileIcon from "@mui/icons-material/UploadFile";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { useSearchParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 
 interface TicketFormProps {
     onSubmit: (formData: {
@@ -23,8 +23,9 @@ interface TicketFormProps {
 }
 
 export const DetailTicket: React.FC<TicketFormProps> = ({ onSubmit }) => {
-
+    const { id } = useParams();
     const [formData, setFormData] = React.useState({
+        id,
         subject: '',
         description: '',
         recipient: '',
@@ -37,7 +38,7 @@ export const DetailTicket: React.FC<TicketFormProps> = ({ onSubmit }) => {
         status: '',
         comment: '',
     });
-
+    const formatedId = id?.toString().padStart(3, '0');
     let [searchParams] = useSearchParams();
     const editing = searchParams.get('editing')
     const initialIsEditing = editing === 'true';
@@ -79,9 +80,9 @@ export const DetailTicket: React.FC<TicketFormProps> = ({ onSubmit }) => {
     };
 
     return (
-        <Box component="form" onSubmit={handleSubmit} sx={{ p: 3, border: '1px solid #ccc', borderRadius: 2 }}>
+        <Box component="form" onSubmit={handleSubmit} sx={{ p: 3, marginTop: 5, border: '1px solid #ccc', borderRadius: 2 }}>
             <Typography variant="h6" gutterBottom>
-                Crear Ticket #ID2012
+                Ticket #C{formatedId}
             </Typography>
             <Grid container spacing={2}>
                 <Grid item xs={12}>
