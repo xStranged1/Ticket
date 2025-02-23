@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { motion } from "framer-motion";
 import {
     Box,
     Typography,
@@ -14,8 +15,6 @@ import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import SupportAgentIcon from "@mui/icons-material/SupportAgent";
 import { z } from "zod";
-import { useTheme } from "@emotion/react";
-
 
 const loginSchema = z.object({
     email: z.string().email("Debe ser un email válido"),
@@ -26,26 +25,20 @@ const loginSchema = z.object({
         .regex(/[0-9]/, "La contraseña debe incluir al menos un número"),
 });
 
-
-
 const ExternalLogin: React.FC = () => {
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
+    const [formData, setFormData] = useState({ email: "", password: "" });
     const [showPassword, setShowPassword] = useState(false);
     const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
 
     const handleClickShowPassword = () => setShowPassword(!showPassword);
 
-    const handleMouseDownPassword = (
-        event: React.MouseEvent<HTMLButtonElement>
-    ) => {
-        event.preventDefault();
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value });
     };
-
 
     const validateForm = () => {
         try {
-            loginSchema.parse({ email, password });
+            loginSchema.parse(formData);
             setErrors({});
             return true;
         } catch (e) {
@@ -63,138 +56,129 @@ const ExternalLogin: React.FC = () => {
 
     const handleLogin = () => {
         if (validateForm()) {
-            console.log("Iniciar sesión con:", { email, password });
-
+            console.log("Iniciar sesión con:", formData);
         }
-    };
-
-
-    const handleSupportRedirect = () => {
-        window.location.href = "/support";
     };
 
     return (
         <Box
             sx={{
+                position: "fixed",
+                top: 0,
+                left: 0,
+                width: "100%",
+                height: "100vh",
+                backgroundImage: "url('/download.jpg')",
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+                backgroundAttachment: "fixed",
                 display: "flex",
-                justifyContent: "center",
                 alignItems: "center",
-                minHeight: "100vh",
-                bgcolor: 'background.default',
-                position: "relative",
+                justifyContent: "center",
             }}
         >
-            <Paper
-                sx={{
-                    width: "100%",
-                    maxWidth: "400px",
-                    p: 4,
-                    borderRadius: 2,
-                    boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
-                }}
+            <motion.div
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
             >
-                <Typography
-                    variant="h5"
+                <Paper
                     sx={{
-                        textAlign: "center",
-                        mb: 3,
-                        fontWeight: "bold",
-                        color: "Text",
-                    }}
-                >
-                    Iniciar Sesión
-                </Typography>
-
-
-                <TextField
-                    label="Email"
-                    variant="outlined"
-                    fullWidth
-                    type="email"
-                    placeholder="Ingresá tu email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    sx={{ mb: 2 }}
-                    error={!!errors.email}
-                    helperText={errors.email}
-                />
-
-
-                <TextField
-                    label="Contraseña"
-                    variant="outlined"
-                    fullWidth
-                    type={showPassword ? "text" : "password"}
-                    placeholder="Ingresá tu contraseña"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    sx={{ mb: 2 }}
-                    error={!!errors.password}
-                    helperText={errors.password}
-                    InputProps={{
-                        endAdornment: (
-                            <InputAdornment position="end">
-                                <IconButton
-                                    onClick={handleClickShowPassword}
-                                    onMouseDown={handleMouseDownPassword}
-                                    edge="end"
-                                >
-                                    {showPassword ? <VisibilityOff /> : <Visibility />}
-                                </IconButton>
-                            </InputAdornment>
-                        ),
-                    }}
-                />
-
-
-                <Button
-                    variant="contained"
-                    fullWidth
-                    onClick={handleLogin}
-                    sx={{
-                        backgroundColor: "#4caf50",
+                        width: "100%",
+                        maxWidth: "400px",
+                        p: 4,
+                        borderRadius: 2,
+                        boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.2)",
+                        background: "rgba(30, 30, 30, 0.85)",
                         color: "white",
-                        fontWeight: "bold",
-                        "&:hover": {
-                            backgroundColor: "#45a049",
-                        },
                     }}
                 >
-                    Iniciar sesión
-                </Button>
+                    <Typography
+                        variant="h5"
+                        sx={{ textAlign: "center", mb: 3, fontWeight: "bold" }}
+                    >
+                        Tickets
+                    </Typography>
 
+                    <TextField
+                        label="Email"
+                        variant="outlined"
+                        fullWidth
+                        name="email"
+                        type="email"
+                        placeholder="Ingresá tu email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        sx={{ mb: 2, bgcolor: "white", borderColor: "#2196f3" }}
+                        error={!!errors.email}
+                        helperText={errors.email}
+                        InputProps={{ style: { color: "black" } }}
+                    />
 
-                <Typography
-                    variant="body2"
+                    <TextField
+                        label="Contraseña"
+                        variant="outlined"
+                        fullWidth
+                        name="password"
+                        type={showPassword ? "text" : "password"}
+                        placeholder="Ingresá tu contraseña"
+                        value={formData.password}
+                        onChange={handleChange}
+                        sx={{ mb: 2, bgcolor: "white", borderColor: "#2196f3" }}
+                        error={!!errors.password}
+                        helperText={errors.password}
+                        InputProps={{
+                            style: { color: "black" },
+                            endAdornment: (
+                                <InputAdornment position="end">
+                                    <IconButton onClick={handleClickShowPassword} edge="end">
+                                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                                    </IconButton>
+                                </InputAdornment>
+                            ),
+                        }}
+                    />
+
+                    <motion.div whileHover={{ scale: 1.05 }}>
+                        <Button
+                            variant="contained"
+                            fullWidth
+                            onClick={handleLogin}
+                            sx={{
+                                backgroundColor: "#2196f3",
+                                color: "white",
+                                fontWeight: "bold",
+                                "&:hover": { backgroundColor: "#1976d2" },
+                            }}
+                        >
+                            Iniciar sesión
+                        </Button>
+                    </motion.div>
+
+                    <Typography variant="body2" sx={{ mt: 2, textAlign: "center" }}>
+                        <Link href="#" underline="none" color="white">
+                            ¿Olvidaste tu contraseña?
+                        </Link>
+                    </Typography>
+                </Paper>
+            </motion.div>
+
+            <motion.div whileHover={{ scale: 1.1 }}>
+                <Fab
+                    color="primary"
+                    aria-label="Soporte"
+                    onClick={() => (window.location.href = "/support")}
                     sx={{
-                        mt: 2,
-                        textAlign: "center",
-                        color: "#333",
+                        
+                        bottom: 20,
+                        right: 20,
+                        backgroundColor: "#2196f3",
+                        "&:hover": { backgroundColor: "#1976d2" },
                     }}
                 >
-                    <Link href="#" underline="none">
-                        ¿Olvidaste tu contraseña?
-                    </Link>
-                </Typography>
-            </Paper>
-
-
-            <Fab
-                color="primary"
-                aria-label="Soporte"
-                onClick={handleSupportRedirect}
-                sx={{
-                    position: "absolute",
-                    bottom: 20,
-                    right: 20,
-                    backgroundColor: "#2196f3",
-                    "&:hover": {
-                        backgroundColor: "#1976d2",
-                    },
-                }}
-            >
-                <SupportAgentIcon />
-            </Fab>
+                    <SupportAgentIcon />
+                </Fab>
+            </motion.div>
         </Box>
     );
 };
