@@ -15,6 +15,7 @@ import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import SupportAgentIcon from "@mui/icons-material/SupportAgent";
 import { z } from "zod";
+import { useNavigate } from "react-router-dom";
 
 const loginSchema = z.object({
     email: z.string().email("Debe ser un email válido"),
@@ -29,6 +30,7 @@ const ExternalLogin: React.FC = () => {
     const [formData, setFormData] = useState({ email: "", password: "" });
     const [showPassword, setShowPassword] = useState(false);
     const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+    const navigate = useNavigate();
 
     const handleClickShowPassword = () => setShowPassword(!showPassword);
 
@@ -57,6 +59,7 @@ const ExternalLogin: React.FC = () => {
     const handleLogin = () => {
         if (validateForm()) {
             console.log("Iniciar sesión con:", formData);
+            navigate('/tickets')
         }
     };
 

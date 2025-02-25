@@ -20,7 +20,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import { rows } from '../const/dummyData';
 import { Priority, Ticket } from '../types/types';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
 
 
@@ -168,12 +168,12 @@ export default function Tickets() {
         setSelected([]);
     };
 
-    const handleClick = (_event: React.MouseEvent<unknown>, id: number) => {
-        const selectedIndex = selected.indexOf(id);
+    const handleClick = (_event: React.MouseEvent<unknown>, row: any) => {
+        const selectedIndex = selected.indexOf(row.id);
         let newSelected: readonly number[] = [];
 
         if (selectedIndex === -1) {
-            newSelected = newSelected.concat(selected, id);
+            newSelected = newSelected.concat(selected, row.id);
         } else if (selectedIndex === 0) {
             newSelected = newSelected.concat(selected.slice(1));
         } else if (selectedIndex === selected.length - 1) {
@@ -185,7 +185,7 @@ export default function Tickets() {
             );
         }
         setSelected(newSelected);
-        window.location.href = `/ticket/${id}`;
+        navigate(`/ticket/${row.id}`, { state: { ticket: row } })
     };
 
     const handleChangePage = (_event: unknown, newPage: number) => {
@@ -321,7 +321,7 @@ export default function Tickets() {
                                     <TableRow
                                         style={{ cursor: 'pointer' }}
                                         hover
-                                        onClick={(event) => handleClick(event, row.id)}
+                                        onClick={(event) => handleClick(event, row)}
                                         role="checkbox"
                                         aria-checked={isItemSelected}
                                         tabIndex={-1}
@@ -342,7 +342,7 @@ export default function Tickets() {
                                                 <IconButton
                                                     onClick={(event) => {
                                                         event.stopPropagation();
-                                                        navigate(`/ticket/${row.id}`)
+                                                        navigate(`/ticket/${row.id}`, { state: { ticket: row } })
                                                     }}
                                                 >
                                                     <VisibilityIcon color='action' />
@@ -353,7 +353,7 @@ export default function Tickets() {
                                             <Tooltip title="Modificar">
                                                 <IconButton onClick={(event) => {
                                                     event.stopPropagation();
-                                                    navigate(`/ticket/${row.id}?editing=true`)
+                                                    navigate(`/ticket/${row.id}?editing=true`, { state: { ticket: row } })
                                                 }}>
                                                     <EditIcon color='primary' />
                                                 </IconButton>

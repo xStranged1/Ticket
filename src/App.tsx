@@ -15,7 +15,7 @@ function App() {
 
   // Recordar que tickets necesita barra de busqueda(Relacionados),
   // Campana de notis (TU TICKET A SIDO REVISADO (HORARIO) podes apretar la noti y te lleva al ticket
-  // boton eliminar con confirmacion, y podemos agregar un zoom al pasar el mouse sobre una tarjeta 
+  // boton eliminar con confirmacion, y podemos agregar un zoom al pasar el mouse sobre una tarjeta
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
 
   const theme = useMemo(() => prefersDarkMode ? darkTheme : lightTheme, [prefersDarkMode]);

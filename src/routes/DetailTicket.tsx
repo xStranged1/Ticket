@@ -1,10 +1,15 @@
-import React from "react";
+import React, { useState } from "react";
 import {
     Box, TextField, Typography, Button, Select, MenuItem, InputLabel, FormControl, Grid, IconButton, List, ListItem, ListItemText,
+    Snackbar,
+    Alert,
+    SnackbarCloseReason,
 } from "@mui/material";
 import UploadFileIcon from "@mui/icons-material/UploadFile";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { useParams, useSearchParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { Ticket } from "../types/types";
+import { format } from 'date-fns';
 
 interface TicketFormProps {
     onSubmit: (formData: {
@@ -23,21 +28,29 @@ interface TicketFormProps {
 }
 
 export const DetailTicket: React.FC<TicketFormProps> = ({ onSubmit }) => {
+
     const { id } = useParams();
+    const location = useLocation();
+    const { ticket }: { ticket: Ticket } = location.state || {}; // Accediendo al objeto
+    const navigate = useNavigate();
+    const [open, setOpen] = useState(false);
+
+    const formatedDate = format(ticket.date, 'dd/MM/yyyy')
     const [formData, setFormData] = React.useState({
         id,
-        subject: '',
-        description: '',
-        recipient: '',
+        subject: ticket.subject,
+        description: ticket.description,
+        recipient: ticket.assigneeId,
         related: '',
         files: [] as File[],
-        category: '',
-        priority: '',
-        date: '',
-        time: '',
-        status: '',
-        comment: '',
+        category: ticket.categoryId,
+        priority: ticket.priority,
+        date: formatedDate,
+        time: '15:30',
+        status: 'Iniciado',
+        comment: 'Tiempo limite 3 semanas',
     });
+
     const formatedId = id?.toString().padStart(3, '0');
     let [searchParams] = useSearchParams();
     const editing = searchParams.get('editing')
@@ -79,8 +92,37 @@ export const DetailTicket: React.FC<TicketFormProps> = ({ onSubmit }) => {
         setIsEditing(false);
     };
 
+    const handleConfirm = () => {
+        setOpen(true);
+        setTimeout(() => {
+            navigate('/tickets')
+        }, 1600);
+    }
+
+    const handleClose = (
+        event?: React.SyntheticEvent | Event,
+        reason?: SnackbarCloseReason,
+    ) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setOpen(false);
+    };
+
     return (
         <Box component="form" onSubmit={handleSubmit} sx={{ p: 3, marginTop: 5, border: '1px solid #ccc', borderRadius: 2 }}>
+
+            <Snackbar open={open} autoHideDuration={6000} onClose={handleClose} anchorOrigin={{ vertical: 'top', horizontal: 'center' }} >
+                <Alert
+                    onClose={handleClose}
+                    severity="success"
+                    variant="filled"
+                    sx={{ width: '100%' }}
+                >
+                    Se realizaron correctamente los cambios
+                </Alert>
+            </Snackbar>
+
             <Typography variant="h6" gutterBottom>
                 Ticket #C{formatedId}
             </Typography>
@@ -168,7 +210,7 @@ export const DetailTicket: React.FC<TicketFormProps> = ({ onSubmit }) => {
                         label="Fecha"
                         name="date"
                         type="date"
-                        value={formData.date}
+                        value={formatedDate}
                         onChange={handleChange}
                         fullWidth
                         InputLabelProps={{ shrink: true }}
@@ -192,6 +234,7 @@ export const DetailTicket: React.FC<TicketFormProps> = ({ onSubmit }) => {
                         <InputLabel>Estado</InputLabel>
                         <Select
                             name="status"
+                            label={formData.status}
                             value={formData.status}
                             onChange={handleChange}
                         >
@@ -247,7 +290,7 @@ export const DetailTicket: React.FC<TicketFormProps> = ({ onSubmit }) => {
                     <Button variant="outlined" fullWidth onClick={handleCancel} disabled={!isEditing}>Cancelar</Button>
                 </Grid>
                 <Grid item xs={12} sm={4}>
-                    <Button type="submit" variant="contained" fullWidth disabled={!isEditing}>Confirmar</Button>
+                    <Button type="submit" variant="contained" fullWidth disabled={!isEditing} onClick={handleConfirm}>Confirmar</Button>
                 </Grid>
                 <Grid item xs={12} sm={4}>
                     <Button variant="contained" color="success" fullWidth onClick={handleEdit} disabled={isEditing}>Editar</Button>

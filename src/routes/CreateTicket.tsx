@@ -10,6 +10,8 @@ import {
     Grid,
     IconButton,
     Paper,
+    Snackbar,
+    Alert,
 } from "@mui/material";
 
 import UploadFileIcon from "@mui/icons-material/UploadFile";
@@ -21,10 +23,12 @@ import { useNavigate } from "react-router-dom";
 import { dummyCategories } from "../const/dummyData";
 
 export default function CreateTicket() {
-
     const [categories, setCategories] = useState<Category[]>([]);
     const [selectedCategory, setSelectedCategory] = useState<Category | "">("");
     const [prioridad, setPrioridad] = useState<Priority | "">("");
+    const [open, setOpen] = useState(false);
+    const [file, setFile] = useState<File | null>(null);
+
     const navigate = useNavigate();
 
     const handleCategoriesChange = (event: ChangeEvent<{ value: unknown }>) => {
@@ -35,47 +39,69 @@ export default function CreateTicket() {
         setPrioridad(event.target.value as Priority);
     };
 
-    useEffect(() => {
-
-        const fetchCategories = async () => {
-            const categories = await getAllCategories()
-            if (categories) setCategories(categories) // TODO: Arreglar esto
-            setCategories(dummyCategories)
+    const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+        if (event.target.files && event.target.files.length > 0) {
+            setFile(event.target.files[0]);
         }
-        fetchCategories()
-    }, [])
+    };
+
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const categories = await getAllCategories();
+                if (categories) {
+                    setCategories(categories);
+                } else {
+                    setCategories(dummyCategories);
+                }
+            } catch (error) {
+                console.error("Error fetching categories:", error);
+                setCategories(dummyCategories);
+            }
+        };
+        fetchCategories();
+    }, []);
+
+    const handleClose = (
+        event?: React.SyntheticEvent | Event,
+        reason?: SnackbarCloseReason
+    ) => {
+        if (reason === "clickaway") {
+            return;
+        }
+        setOpen(false);
+    };
 
     const handleSubmit = async () => {
-        // validaciones
-        if (!selectedCategory) return // show toast
-        if (!prioridad) return
+        if (!selectedCategory || !prioridad) return;
 
         const newTicket: BaseTicket = {
-            subject: 'titulo',
-            description: 'una desc',
+            subject: "Título de ejemplo",
+            description: "Descripción de ejemplo",
             priority: matchPriority[prioridad] as PriorityBD,
             categoryId: selectedCategory.typeId,
-
-            // TODO: COMPLETAR ESTO
             creatorId: 2,
             typeId: 3,
             assigneeId: 4,
-            requirementsIds: [4, 2]
+            requirementsIds: [4, 2],
+        };
+
+        console.log("newTicket", newTicket);
+
+        try {
+            const res = await createTicket(newTicket);
+            if (!res) {
+                console.error("Error al crear ticket");
+                // return;
+            }
+            setOpen(true);
+            setTimeout(() => {
+                navigate(`/tickets`);
+            }, 1800);
+        } catch (error) {
+            console.error("Error al enviar ticket:", error);
         }
-
-        console.log("newTicket");
-        console.log(newTicket);
-
-        const res = await createTicket(newTicket)
-
-        // MANEJAR RESPONSE
-        if (!res) {
-            //show toast fail
-            return
-        }
-        // show toast success
-        navigate(`/tickets`)
-    }
+    };
 
     return (
         <Paper
@@ -85,37 +111,31 @@ export default function CreateTicket() {
                 mt: 5,
                 p: 3,
                 mb: 5,
-                bgcolor: 'background.main',
+                bgcolor: "background.main",
                 borderRadius: 2,
             }}
         >
+            <Snackbar open={open} autoHideDuration={6000} onClose={handleClose} anchorOrigin={{ vertical: "top", horizontal: "center" }}>
+                <Alert onClose={handleClose} severity="success" variant="filled" sx={{ width: "100%" }}>
+                    ¡El ticket se creó con éxito!
+                </Alert>
+            </Snackbar>
             <Typography variant="h5" sx={{ mb: 3, fontWeight: "bold" }}>
                 Crear Ticket #ID2012
             </Typography>
-
             <Grid container spacing={2}>
                 <Grid item xs={12}>
                     <TextField label="Asunto" variant="outlined" fullWidth />
                 </Grid>
-
                 <Grid item xs={12}>
-                    <TextField
-                        label="Descripción"
-                        variant="outlined"
-                        fullWidth
-                        multiline
-                        rows={4}
-                    />
+                    <TextField label="Descripción" variant="outlined" fullWidth multiline rows={4} />
                 </Grid>
-
                 <Grid item xs={12}>
                     <TextField label="Usuario destinatario" variant="outlined" fullWidth />
                 </Grid>
-
                 <Grid item xs={12}>
                     <TextField label="Relacionados" variant="outlined" fullWidth />
                 </Grid>
-
                 <Grid item xs={6}>
                     <FormControl fullWidth>
                         <InputLabel id="categories-label">Categoría</InputLabel>
@@ -151,41 +171,20 @@ export default function CreateTicket() {
                         </Select>
                     </FormControl>
                 </Grid>
-
                 <Grid item xs={12}>
-                    <Box
-                        sx={{
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "space-between",
-                            border: "1px dashed gray",
-                            p: 2,
-                            borderRadius: 2,
-                        }}
-                    >
-                        <Typography>Archivos adjuntos</Typography>
+                    <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", border: "1px dashed gray", p: 2, borderRadius: 2 }}>
+                        <Typography>Archivos adjuntos: {file ? file.name : "Ninguno"}</Typography>
                         <IconButton color="primary" component="label">
                             <UploadFileIcon />
-                            <input type="file" hidden />
+                            <input type="file" hidden onChange={handleFileChange} />
                         </IconButton>
                     </Box>
                 </Grid>
-
                 <Grid item xs={12} sx={{ display: "flex", justifyContent: "space-between" }}>
-                    <Button variant="contained" color="error"
-                        onClick={(event) => {
-                            event.stopPropagation();
-                            navigate(`/tickets`)
-                        }}
-                    >
-                        Cancelar
-                    </Button>
-                    <Button variant="contained" color="success" onClick={handleSubmit}>
-                        Confirmar
-                    </Button>
+                    <Button variant="contained" color="error" onClick={() => navigate(`/tickets`)}>Cancelar</Button>
+                    <Button variant="contained" color="success" onClick={handleSubmit}>Confirmar</Button>
                 </Grid>
             </Grid>
         </Paper>
     );
-};
-
+}

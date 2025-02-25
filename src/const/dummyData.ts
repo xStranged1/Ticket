@@ -15,7 +15,7 @@ export const dummyCategories: Category[] = [
     },
     {
         typeId: 4,
-        description: 'Queseyo',
+        description: 'DevOps ',
     },
 ]
 export const rows: Ticket[] = [
