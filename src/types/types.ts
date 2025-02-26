@@ -14,31 +14,38 @@ export const matchPriority = {
 
 // ESTE TIPO ES IGUAL AL DTO DEL BACK
 export interface Type {
-    id: number,
+    id: number, 
     description: string,
-    code: string,
+    code: string, // 3 digitos
 }
 
 export type State = "OPEN" |"ASSIGNED"|  "CLOSED"
 
 export interface BaseTicket {
     subject: string,
-    priority: PriorityBD,
-    description: string,
-    category: Category,
     creatorId: number,
-    typeId: number,
+    categoryId: number,
+    description: string,
+    priority: PriorityBD,
     requirements?: Ticket[],
     assigneeId?: number // este no esta en el back
 }
 
 // ESTE TIPO ES IGUAL AL DTO DEL BACK
-export interface Ticket extends BaseTicket {
-    state: State,
+export interface Ticket {
     id: number;
     code: string;
+    description: string,
+    state: State,
+    priority: PriorityBD,
+    creator: any,
+    assignee: any,
+    category: Category,
+    type: Type,
+    requirements?: Ticket[]
     date: Date;
     time: Date;
+    files: any
 }
 
 // ESTE TIPO ES IGUAL AL DTO DEL BACK
