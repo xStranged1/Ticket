@@ -41,7 +41,7 @@ const headCells: readonly HeadCell[] = [
         label: 'Código',
     },
     {
-        id: 'issue',
+        id: 'subject',
         numeric: true,
         disablePadding: false,
         label: 'Requerimiento',
@@ -146,7 +146,7 @@ function EnhancedTableToolbar() {
 export default function Tickets() {
 
     const [order, setOrder] = React.useState<Order>('asc');
-    const [orderBy, setOrderBy] = React.useState<keyof Ticket>('issue');
+    const [orderBy, setOrderBy] = React.useState<keyof Ticket>('subject');
     const [selected, setSelected] = React.useState<readonly number[]>([]);
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
@@ -208,7 +208,7 @@ export default function Tickets() {
 
 
     const filteredRows = rows.filter((row) =>
-        row.issue.toLowerCase().includes(searchTerm),
+        row.subject.toLowerCase().includes(searchTerm),
     );
 
     const priorityValue: Record<Priority, number> = {
@@ -222,8 +222,7 @@ export default function Tickets() {
         () =>
             [...filteredRows].sort((a, b) => {
                 if (orderBy === 'priority') {
-                    console.log('Ordenando por prioridad');
-
+                    // TODO: ARREGLAR PRIORIDADES CUANDO HAGA EL FETCH
                     if (order === 'asc') {
                         return priorityValue[a.priority] - priorityValue[b.priority];
                     } else {
@@ -335,7 +334,7 @@ export default function Tickets() {
                                         >
                                             {row.code}
                                         </TableCell>
-                                        <TableCell align="right">{row.issue}</TableCell>
+                                        <TableCell align="right">{row.subject}</TableCell>
                                         <TableCell align="right">{row.priority}</TableCell>
                                         <TableCell align="right">{row.date}</TableCell>
                                         <TableCell padding="checkbox">

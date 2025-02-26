@@ -1,4 +1,3 @@
-import React from "react";
 import {
     Box,
     TextField,
@@ -14,19 +13,69 @@ import {
 } from "@mui/material";
 
 import UploadFileIcon from "@mui/icons-material/UploadFile";
+import { createTicket } from "../services/ticketService";
+import { BaseTicket, Category, matchPriority, Priority, PriorityBD } from "../types/types";
+import { getAllCategories } from "../services/categoryService";
+import { ChangeEvent, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { dummyCategories } from "../const/dummyData";
+
 export default function CreateTicket() {
 
+    const [categories, setCategories] = useState<Category[]>([]);
+    const [selectedCategory, setSelectedCategory] = useState<Category | "">("");
+    const [prioridad, setPrioridad] = useState<Priority | "">("");
+    const navigate = useNavigate();
 
-    const [categoria, setCategoria] = React.useState("");
-    const [prioridad, setPrioridad] = React.useState("");
-
-    const handleCategoriaChange = (event: React.ChangeEvent<{ value: unknown }>) => {
-        setCategoria(event.target.value as string);
+    const handleCategoriesChange = (event: ChangeEvent<{ value: unknown }>) => {
+        setSelectedCategory(event.target.value as Category);
     };
 
-    const handlePrioridadChange = (event: React.ChangeEvent<{ value: unknown }>) => {
-        setPrioridad(event.target.value as string);
+    const handlePrioridadChange = (event: ChangeEvent<{ value: unknown }>) => {
+        setPrioridad(event.target.value as Priority);
     };
+
+    useEffect(() => {
+
+        const fetchCategories = async () => {
+            const categories = await getAllCategories()
+            if (categories) setCategories(categories) // TODO: Arreglar esto
+            setCategories(dummyCategories)
+        }
+        fetchCategories()
+    }, [])
+
+    const handleSubmit = async () => {
+        // validaciones
+        if (!selectedCategory) return // show toast
+        if (!prioridad) return
+
+        const newTicket: BaseTicket = {
+            subject: 'titulo',
+            description: 'una desc',
+            priority: matchPriority[prioridad] as PriorityBD,
+            categoryId: selectedCategory.typeId,
+
+            // TODO: COMPLETAR ESTO
+            creatorId: 2,
+            typeId: 3,
+            assigneeId: 4,
+            requirementsIds: [4, 2]
+        }
+
+        console.log("newTicket");
+        console.log(newTicket);
+
+        const res = await createTicket(newTicket)
+
+        // MANEJAR RESPONSE
+        if (!res) {
+            //show toast fail
+            return
+        }
+        // show toast success
+        navigate(`/tickets`)
+    }
 
     return (
         <Paper
@@ -69,21 +118,16 @@ export default function CreateTicket() {
 
                 <Grid item xs={6}>
                     <FormControl fullWidth>
-                        <InputLabel id="categoria-label">Categoría</InputLabel>
+                        <InputLabel id="categories-label">Categoría</InputLabel>
                         <Select
-                            labelId="categoria-label"
-                            value={categoria}
-                            onChange={handleCategoriaChange}
+                            labelId="categories-label"
+                            value={selectedCategory ?? ''}
+                            onChange={handleCategoriesChange}
                             label="Categoría"
                         >
-                            <MenuItem value="Environment">Environment</MenuItem>
-                            <MenuItem value="Hardware">Hardware</MenuItem>
-                            <MenuItem value="Deployment">Deployment</MenuItem>
-                            <MenuItem value="Desing">Deployment</MenuItem>
-                            <MenuItem value="Development">Deployment</MenuItem>
-                            <MenuItem value="devOps">Deployment</MenuItem>
-                            <MenuItem value="Conectivity">Deployment</MenuItem>
-                            <MenuItem value="Network">Deployment</MenuItem>
+                            {categories.map((category) => (
+                                <MenuItem key={category.typeId} value={category}>{category.description}</MenuItem>
+                            ))}
 
                         </Select>
                     </FormControl>
@@ -128,10 +172,15 @@ export default function CreateTicket() {
                 </Grid>
 
                 <Grid item xs={12} sx={{ display: "flex", justifyContent: "space-between" }}>
-                    <Button variant="contained" color="error">
+                    <Button variant="contained" color="error"
+                        onClick={(event) => {
+                            event.stopPropagation();
+                            navigate(`/tickets`)
+                        }}
+                    >
                         Cancelar
                     </Button>
-                    <Button variant="contained" color="success">
+                    <Button variant="contained" color="success" onClick={handleSubmit}>
                         Confirmar
                     </Button>
                 </Grid>
