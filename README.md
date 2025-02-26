@@ -2,6 +2,8 @@
 
 ## Como iniciar el proyecto
 
+### Requisitos:
+#### descargar e instalar NodeJS: https://nodejs.org/es/download
 ### En una consola como la de vs-code
 #### Instalar las dependencias con el comando
 ```js
