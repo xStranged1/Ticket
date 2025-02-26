@@ -19,20 +19,22 @@ export interface Type {
     code: string,
 }
 
-// ESTE TIPO ES IGUAL AL DTO DEL BACK
+export type State = "OPEN" |"ASSIGNED"|  "CLOSED"
+
 export interface BaseTicket {
     subject: string,
     priority: PriorityBD,
     description: string,
-    categoryId: number,
+    category: Category,
     creatorId: number,
     typeId: number,
-    requirementsIds?: number[]
-    assigneeId?: number
+    requirements?: Ticket[],
+    assigneeId?: number // este no esta en el back
 }
 
 // ESTE TIPO ES IGUAL AL DTO DEL BACK
 export interface Ticket extends BaseTicket {
+    state: State,
     id: number;
     code: string;
     date: Date;
@@ -41,6 +43,7 @@ export interface Ticket extends BaseTicket {
 
 // ESTE TIPO ES IGUAL AL DTO DEL BACK
 export interface Category {
+    id: number,
     description: string;
-    typeId: number;
+    type: Type;
 }

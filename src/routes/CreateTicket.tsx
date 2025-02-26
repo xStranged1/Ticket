@@ -79,11 +79,11 @@ export default function CreateTicket() {
             subject: "Título de ejemplo",
             description: "Descripción de ejemplo",
             priority: matchPriority[prioridad] as PriorityBD,
-            categoryId: selectedCategory.typeId,
+            category: selectedCategory,
             creatorId: 2,
             typeId: 3,
             assigneeId: 4,
-            requirementsIds: [4, 2],
+            requirements: [], // TODO: AGREGAR TICKETS RELACIONADOS
         };
 
         console.log("newTicket", newTicket);
@@ -146,7 +146,7 @@ export default function CreateTicket() {
                             label="Categoría"
                         >
                             {categories.map((category) => (
-                                <MenuItem key={category.typeId} value={category}>{category.description}</MenuItem>
+                                <MenuItem key={category.id} value={category}>{category.description}</MenuItem>
                             ))}
 
                         </Select>

@@ -1,20 +1,20 @@
 import { Category, Ticket } from "../types/types";
 
-export const dummyCategories: Category[] = [
+export const dummyCategories: Category[] = [ //Todo arreglar esto
     {
-        typeId: 2,
+        id: 2,
         description: 'Hardware',
     },
     {
-        typeId: 1,
+        id: 1,
         description: 'Software',
     },
     {
-        typeId: 3,
+        id: 3,
         description: 'Redes',
     },
     {
-        typeId: 4,
+        id: 4,
         description: 'DevOps ',
     },
 ]
