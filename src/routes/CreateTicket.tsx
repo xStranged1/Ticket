@@ -79,11 +79,10 @@ export default function CreateTicket() {
             subject: "Título de ejemplo",
             description: "Descripción de ejemplo",
             priority: matchPriority[prioridad] as PriorityBD,
-            categoryId: selectedCategory.typeId,
+            categoryId: selectedCategory.id,
             creatorId: 2,
-            typeId: 3,
-            assigneeId: 4,
-            requirementsIds: [4, 2],
+            //assigneeId: 4,
+            // requirements: [], // TODO: AGREGAR TICKETS RELACIONADOS
         };
 
         console.log("newTicket", newTicket);
@@ -94,6 +93,8 @@ export default function CreateTicket() {
                 console.error("Error al crear ticket");
                 // return;
             }
+            console.log("res");
+            console.log(res);
             setOpen(true);
             setTimeout(() => {
                 navigate(`/tickets`);
@@ -146,7 +147,7 @@ export default function CreateTicket() {
                             label="Categoría"
                         >
                             {categories.map((category) => (
-                                <MenuItem key={category.typeId} value={category}>{category.description}</MenuItem>
+                                <MenuItem key={category.id} value={category}>{category.description}</MenuItem>
                             ))}
 
                         </Select>

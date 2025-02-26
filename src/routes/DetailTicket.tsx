@@ -35,7 +35,8 @@ export const DetailTicket: React.FC<TicketFormProps> = ({ onSubmit }) => {
     const navigate = useNavigate();
     const [open, setOpen] = useState(false);
 
-    const formatedDate = format(ticket.date, 'dd/MM/yyyy')
+    const formatedDate = format(ticket.date, 'yyyy-MM-dd')
+    const formatedTime = format(ticket.time, 'hh:mm')
     const [formData, setFormData] = React.useState({
         id,
         subject: ticket.subject,
@@ -43,10 +44,10 @@ export const DetailTicket: React.FC<TicketFormProps> = ({ onSubmit }) => {
         recipient: ticket.assigneeId,
         related: '',
         files: [] as File[],
-        category: ticket.categoryId,
+        category: ticket.category,
         priority: ticket.priority,
         date: formatedDate,
-        time: '15:30',
+        time: formatedTime,
         status: 'Iniciado',
         comment: 'Tiempo limite 3 semanas',
     });
@@ -210,7 +211,7 @@ export const DetailTicket: React.FC<TicketFormProps> = ({ onSubmit }) => {
                         label="Fecha"
                         name="date"
                         type="date"
-                        value={formatedDate}
+                        value={formData.date}
                         onChange={handleChange}
                         fullWidth
                         InputLabelProps={{ shrink: true }}
