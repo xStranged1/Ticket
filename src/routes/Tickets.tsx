@@ -1,4 +1,3 @@
-import * as React from 'react';
 import Box from '@mui/material/Box';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -18,10 +17,12 @@ import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } 
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
-import { rows } from '../const/dummyData';
-import { Priority, Ticket } from '../types/types';
+import { rows as dummyTickets } from '../const/dummyData';
+import { matchPriority, Priority, Ticket } from '../types/types';
 import { useNavigate } from 'react-router-dom';
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
+import { ChangeEvent, MouseEvent, useEffect, useMemo, useState } from 'react';
+import { getTickets } from '../services/ticketService';
 
 
 type Order = 'asc' | 'desc';
@@ -62,8 +63,8 @@ const headCells: readonly HeadCell[] = [
 
 interface EnhancedTableProps {
     numSelected: number;
-    onRequestSort: (event: React.MouseEvent<unknown>, property: keyof Ticket) => void;
-    onSelectAllClick: (event: React.ChangeEvent<HTMLInputElement>) => void;
+    onRequestSort: (event: MouseEvent<unknown>, property: keyof Ticket) => void;
+    onSelectAllClick: (event: ChangeEvent<HTMLInputElement>) => void;
     order: Order;
     orderBy: string;
     rowCount: number;
@@ -71,7 +72,7 @@ interface EnhancedTableProps {
 
 function EnhancedTableHead(props: EnhancedTableProps) {
     const { order, orderBy, onRequestSort } = props;
-    const createSortHandler = (property: keyof Ticket) => (event: React.MouseEvent<unknown>) => {
+    const createSortHandler = (property: keyof Ticket) => (event: MouseEvent<unknown>) => {
         onRequestSort(event, property);
     };
 
@@ -145,21 +146,36 @@ function EnhancedTableToolbar() {
 
 export default function Tickets() {
 
-    const [order, setOrder] = React.useState<Order>('asc');
-    const [orderBy, setOrderBy] = React.useState<keyof Ticket>('subject');
-    const [selected, setSelected] = React.useState<readonly number[]>([]);
-    const [page, setPage] = React.useState(0);
-    const [rowsPerPage, setRowsPerPage] = React.useState(5);
-    const [searchTerm, setSearchTerm] = React.useState('');
+    const [order, setOrder] = useState<Order>('asc');
+    const [orderBy, setOrderBy] = useState<keyof Ticket>('subject');
+    const [selected, setSelected] = useState<readonly number[]>([]);
+    const [page, setPage] = useState(0);
+    const [rows, setRows] = useState<Ticket[]>(dummyTickets);
+    const [rowsPerPage, setRowsPerPage] = useState(5);
+    const [searchTerm, setSearchTerm] = useState('');
     const navigate = useNavigate();
 
-    const handleRequestSort = (_event: React.MouseEvent<unknown>, property: keyof Ticket) => {
+    useEffect(() => {
+        const fetchTickets = async () => {
+            const res = await getTickets()
+            if (!res) {
+                console.log('err');
+            }
+            console.log("res");
+            console.log(res);
+            setRows(res)
+        }
+
+        fetchTickets()
+    }, [])
+
+    const handleRequestSort = (_event: MouseEvent<unknown>, property: keyof Ticket) => {
         const isAsc = orderBy === property && order === 'asc';
         setOrder(isAsc ? 'desc' : 'asc');
         setOrderBy(property);
     };
 
-    const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const handleSelectAllClick = (event: ChangeEvent<HTMLInputElement>) => {
         if (event.target.checked) {
             const newSelected = rows.map((n) => n.id);
             setSelected(newSelected);
@@ -168,7 +184,7 @@ export default function Tickets() {
         setSelected([]);
     };
 
-    const handleClick = (_event: React.MouseEvent<unknown>, row: any) => {
+    const handleClick = (_event: MouseEvent<unknown>, row: any) => {
         const selectedIndex = selected.indexOf(row.id);
         let newSelected: readonly number[] = [];
 
@@ -192,7 +208,7 @@ export default function Tickets() {
         setPage(newPage);
     };
 
-    const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChangeRowsPerPage = (event: ChangeEvent<HTMLInputElement>) => {
         setRowsPerPage(parseInt(event.target.value, 10));
         setPage(0);
     };
@@ -201,7 +217,7 @@ export default function Tickets() {
     const emptyRows =
         page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
 
-    const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const handleSearch = (event: ChangeEvent<HTMLInputElement>) => {
         setSearchTerm(event.target.value.toLowerCase());
     };
 
@@ -218,7 +234,7 @@ export default function Tickets() {
         'Baja': 1,
     };
 
-    const sortedRows = React.useMemo(
+    const sortedRows = useMemo(
         () =>
             [...filteredRows].sort((a, b) => {
                 if (orderBy === 'priority') {
@@ -243,7 +259,7 @@ export default function Tickets() {
         page * rowsPerPage,
         page * rowsPerPage + rowsPerPage,
     );
-    const [open, setOpen] = React.useState(false);
+    const [open, setOpen] = useState(false);
 
     const handleClickOpen = () => {
         setOpen(true);
@@ -335,7 +351,7 @@ export default function Tickets() {
                                             {row.code}
                                         </TableCell>
                                         <TableCell align="right">{row.subject}</TableCell>
-                                        <TableCell align="right">{row.priority}</TableCell>
+                                        <TableCell align="right">{Object.keys(matchPriority).find(key => matchPriority[key] === row.priority)} </TableCell>
                                         <TableCell align="right">{row.date}</TableCell>
                                         <TableCell padding="checkbox">
                                             <Tooltip title="Ver detalles">

@@ -14,12 +14,12 @@ export const matchPriority = {
 
 // ESTE TIPO ES IGUAL AL DTO DEL BACK
 export interface Type {
-    id: number, 
+    id: number,
     description: string,
     code: string, // 3 digitos
 }
 
-export type State = "OPEN" |"ASSIGNED"|  "CLOSED"
+export type State = "OPEN" | "ASSIGNED" | "CLOSED"
 
 export interface BaseTicket {
     subject: string,
@@ -33,6 +33,7 @@ export interface BaseTicket {
 
 // ESTE TIPO ES IGUAL AL DTO DEL BACK
 export interface Ticket {
+    subject: string,
     id: number;
     code: string;
     description: string,

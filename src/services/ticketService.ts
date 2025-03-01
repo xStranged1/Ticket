@@ -15,10 +15,16 @@ export const createTicket = async (ticket: BaseTicket): Promise<Ticket | false> 
 
 export const getTickets = async (): Promise<Ticket[] | false> => {
     try {
-        const response = await axios.get(`${API_URL}/requirements-sv/api/requirements`);
+        const response = await axios.get(`${API_URL}/requirement-sv/api/requirements`, {
+            headers: { "ngrok-skip-browser-warning": "69420", "Access-Control-Allow-Origin": "*" }
+        });
+        console.log("response");
+        console.log(response);
+
         if (response.status == 200) return response.data;
         return false
     } catch (error: any) {
+        console.log("error");
         console.log(error);
         return false
     }
