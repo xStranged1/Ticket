@@ -11,6 +11,11 @@ export const matchPriority = {
     'Baja': 'LOW'
 }
 
+export const matchState = {
+    "OPEN": "Abierto",
+    "ASSIGNED": "Asignado",
+    "CLOSED": "Cerrado"
+}
 
 // ESTE TIPO ES IGUAL AL DTO DEL BACK
 export interface Type {

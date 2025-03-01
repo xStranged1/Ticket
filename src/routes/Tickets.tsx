@@ -13,16 +13,16 @@ import Paper from '@mui/material/Paper';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import { visuallyHidden } from '@mui/utils';
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from '@mui/material';
+import { Alert, Button, Dialog, DialogActions, DialogContent, DialogTitle, Snackbar, TextField } from '@mui/material';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import { rows as dummyTickets } from '../const/dummyData';
-import { matchPriority, Priority, Ticket } from '../types/types';
+import { matchPriority, matchState, Priority, Ticket } from '../types/types';
 import { useNavigate } from 'react-router-dom';
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
 import { ChangeEvent, MouseEvent, useEffect, useMemo, useState } from 'react';
-import { getTickets } from '../services/ticketService';
+import { deleteTicket, getTickets } from '../services/ticketService';
 
 
 type Order = 'asc' | 'desc';
@@ -54,10 +54,10 @@ const headCells: readonly HeadCell[] = [
         label: 'Prioridad',
     },
     {
-        id: 'date',
+        id: 'state',
         numeric: true,
         disablePadding: false,
-        label: 'Fecha',
+        label: 'Estado',
     },
 ];
 
@@ -163,7 +163,7 @@ export default function Tickets() {
             }
             console.log("res");
             console.log(res);
-            setRows(res)
+            setRows(res.content as Ticket[])
         }
 
         fetchTickets()
@@ -259,18 +259,38 @@ export default function Tickets() {
         page * rowsPerPage,
         page * rowsPerPage + rowsPerPage,
     );
-    const [open, setOpen] = useState(false);
 
-    const handleClickOpen = () => {
+    const [ticketClicked, setTicketClicked] = useState<Ticket>();
+    const [open, setOpen] = useState(false);
+    const [openToastDelete, setOpenToastDelete] = useState(false);
+
+    const handleClickOpen = (row: Ticket) => {
+        setTicketClicked(row)
         setOpen(true);
     };
+
+    const handleCloseToast = () => {
+        setOpenToastDelete(false)
+    }
 
     const handleClose = () => {
         setOpen(false);
     };
 
+    const handleDelete = async () => {
+        setOpen(false);
+        if (!ticketClicked) return
+        const completeDelete = await deleteTicket(ticketClicked.id)
+        if (completeDelete) setOpenToastDelete(true)
+    };
+
     return (
         <Paper sx={{ width: '100%', flex: 1, flexDirection: 'row', justifySelf: 'center', justifyContent: 'center', alignItems: 'center', backgroundColor: "#ccc", marginTop: 5 }}>
+            <Snackbar open={openToastDelete} autoHideDuration={6000} onClose={handleCloseToast} anchorOrigin={{ vertical: "top", horizontal: "center" }}>
+                <Alert onClose={handleCloseToast} severity={'success'} variant="filled" sx={{ width: "100%" }}>
+                    El ticket se elimino con exito!
+                </Alert>
+            </Snackbar>
             <Dialog
                 open={open}
                 onClose={handleClose}
@@ -278,7 +298,7 @@ export default function Tickets() {
                 aria-describedby="alert-dialog-description"
             >
                 <DialogTitle id="alert-dialog-title">
-                    {"Se eliminará el requerimiento"}
+                    {`Se eliminará el requerimiento "${ticketClicked?.code}"`}
                 </DialogTitle>
                 <DialogContent>
                     <div>
@@ -287,11 +307,12 @@ export default function Tickets() {
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleClose} variant='contained'>Cancelar</Button>
-                    <Button onClick={handleClose} autoFocus color='error' variant='contained'>
+                    <Button onClick={handleDelete} autoFocus color='error' variant='contained'>
                         Eliminar
                     </Button>
                 </DialogActions>
             </Dialog>
+
             <Paper sx={{ width: '100%' }}>
                 <EnhancedTableToolbar />
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
@@ -332,7 +353,6 @@ export default function Tickets() {
                             {paginatedRows.map((row, index) => {
                                 const isItemSelected = selected.indexOf(row.id) !== -1;
                                 const labelId = `enhanced-table-checkbox-${index}`;
-
                                 return (
                                     <TableRow
                                         style={{ cursor: 'pointer' }}
@@ -352,7 +372,7 @@ export default function Tickets() {
                                         </TableCell>
                                         <TableCell align="right">{row.subject}</TableCell>
                                         <TableCell align="right">{Object.keys(matchPriority).find(key => matchPriority[key] === row.priority)} </TableCell>
-                                        <TableCell align="right">{row.date}</TableCell>
+                                        <TableCell align="right">{matchState[row.state]}</TableCell>
                                         <TableCell padding="checkbox">
                                             <Tooltip title="Ver detalles">
                                                 <IconButton
@@ -382,7 +402,7 @@ export default function Tickets() {
                                                 <IconButton
                                                     onClick={(event) => {
                                                         event.stopPropagation();
-                                                        handleClickOpen();
+                                                        handleClickOpen(row);
                                                     }}
                                                 >
                                                     <DeleteIcon color='error' />
