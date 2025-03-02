@@ -17,21 +17,32 @@ class AuthService {
         });
     }
 
-    public login(email: string, password: string): void {
-        this.auth0Client.login({
-            realm: environment.auth0.database,
-            audience: environment.auth0.audience,
-            email,
-            password,
-        }, (err, authResult) => {
-            if (err) {
-                console.error(err);
-                return;
-            }
-            console.log(authResult);
-        });
-
+    public async login(email: string, password: string) {
+        let res;
+        try {
+            res = await new Promise((resolve, reject) => {
+                this.auth0Client.login({
+                    realm: environment.auth0.database,
+                    audience: environment.auth0.audience,
+                    email,
+                    password,
+                }, (err, authResult) => {
+                    if (err) {
+                        console.error(err);
+                        reject(err); // Rechazar la promesa si hay error
+                    } else {
+                        console.log('authResult', authResult);
+                        resolve(authResult); // Resolver la promesa si todo fue bien
+                    }
+                });
+            });
+        } catch (err: any) {
+            console.error('Login failed', err);
+            return err
+        }
+        return res;
     }
+
 
     public async handleAuthentication(): Promise<void> {
         const hash = window.location.hash;
@@ -44,6 +55,21 @@ class AuthService {
             console.log('Authenticated');
             await this.setSession(idToken, accessToken, expiresIn);
         }
+    }
+
+    public signup(email: string, password: string): void {
+        this.auth0Client.signup({
+            connection: environment.auth0.database,
+            email,
+            password,
+        }, (err, result) => {
+            if (err) {
+                console.error("Error al registrar usuario:", err);
+                alert("Error al registrar usuario: " + err.description);
+                return;
+            }
+            console.log("Usuario registrado exitosamente:", result);
+        });
     }
 
     private setSession(idToken: string, accessToken: string, expiresIn: string): Promise<void> {
