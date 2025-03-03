@@ -2,7 +2,7 @@
 export type Priority = 'Muy alta' | 'Alta' | 'Media' | 'Baja'
 
 // ESTE TIPO ES IGUAL AL DTO DEL BACK
-export type PriorityBD = 'URGENT' | 'HIGH' | 'MEDIUM' | 'LOW'
+export type PriorityDB = 'URGENT' | 'HIGH' | 'MEDIUM' | 'LOW'
 
 export const matchPriority = {
     'Muy alta': 'URGENT',
@@ -31,7 +31,7 @@ export interface BaseTicket {
     creatorId: number,
     categoryId: number,
     description: string,
-    priority: PriorityBD,
+    priority: PriorityDB,
     requirements?: Ticket[],
     assigneeId?: number // este no esta en el back
 }
@@ -43,7 +43,7 @@ export interface Ticket {
     code: string;
     description: string,
     state: State,
-    priority: PriorityBD,
+    priority: PriorityDB,
     creator: any,
     assignee: any,
     category: Category,
@@ -59,4 +59,19 @@ export interface Category {
     id: number,
     description: string;
     type: Type;
+}
+
+export interface User {
+    id: number,
+    name: string,
+    email: string,
+    username: string,
+    position: string,
+    department: string,
+    userFile: string,
+    sla: boolean,
+    cuil: string,
+    company: string,
+    description: string,
+    active: boolean
 }

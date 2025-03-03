@@ -40,6 +40,12 @@ const ExternalLogin: React.FC = () => {
 
     const handleClickShowPassword = () => setShowPassword(!showPassword);
 
+    const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter') {
+            handleLogin();
+        }
+    };
+
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
@@ -137,6 +143,7 @@ const ExternalLogin: React.FC = () => {
                         type="email"
                         placeholder="Ingresá tu email"
                         value={formData.email}
+                        onKeyDown={handleKeyPress}
                         onChange={handleChange}
                         sx={{ mb: 2, bgcolor: "white", borderColor: "#2196f3" }}
                         error={!!errors.email}
@@ -149,6 +156,7 @@ const ExternalLogin: React.FC = () => {
                         label="Contraseña"
                         variant="outlined"
                         fullWidth
+                        onKeyDown={handleKeyPress}
                         name="password"
                         type={showPassword ? "text" : "password"}
                         placeholder="Ingresá tu contraseña"

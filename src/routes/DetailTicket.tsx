@@ -67,7 +67,7 @@ export const DetailTicket: React.FC<TicketFormProps> = ({ onSubmit }) => {
 
     useEffect(() => {
         const fetchTicket = async () => {
-            const res = await getTicketByID(2)
+            const res = await getTicketByID(idTicket)
             if (!res) {
                 navigate('/tickets')
                 return

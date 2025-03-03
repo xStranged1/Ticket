@@ -16,7 +16,7 @@ import {
 
 import UploadFileIcon from "@mui/icons-material/UploadFile";
 import { createTicket } from "../services/ticketService";
-import { BaseTicket, Category, matchPriority, Priority, PriorityBD } from "../types/types";
+import { BaseTicket, Category, matchPriority, Priority, PriorityDB } from "../types/types";
 import { getAllCategories } from "../services/categoryService";
 import { ChangeEvent, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -78,23 +78,27 @@ export default function CreateTicket() {
         const newTicket: BaseTicket = {
             subject: "Título de ejemplo",
             description: "Descripción de ejemplo",
-            priority: matchPriority[prioridad] as PriorityBD,
+            priority: matchPriority[prioridad] as PriorityDB,
             categoryId: selectedCategory.id,
             creatorId: 2,
-            //assigneeId: 4,
-            // requirements: [], // TODO: AGREGAR TICKETS RELACIONADOS
         };
 
         console.log("newTicket", newTicket);
 
+        const formData = new FormData();
+        formData.append("requirement", new Blob([JSON.stringify(newTicket)], { type: "application/json" }));
+
+        if (file) {
+            formData.append("files", file);
+        }
+
         try {
-            const res = await createTicket(newTicket);
+            const res = await createTicket(formData); // Asegúrate de que la función createTicket acepte FormData
             if (!res) {
                 console.error("Error al crear ticket");
-                // return;
+                return;
             }
-            console.log("res");
-            console.log(res);
+            console.log("res", res);
             setOpen(true);
             setTimeout(() => {
                 navigate(`/tickets`);

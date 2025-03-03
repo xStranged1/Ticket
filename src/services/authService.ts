@@ -6,7 +6,6 @@ class AuthService {
     private auth0Client: auth0.WebAuth;
     public isAuthenticated: boolean = false;
 
-
     constructor() {
         this.auth0Client = new auth0.WebAuth({
             domain: environment.auth0.domain,

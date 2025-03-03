@@ -18,7 +18,7 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import { rows as dummyTickets } from '../const/dummyData';
-import { matchPriority, matchState, Priority, Ticket } from '../types/types';
+import { matchPriority, matchState, PriorityDB, Ticket } from '../types/types';
 import { useNavigate } from 'react-router-dom';
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
 import { ChangeEvent, MouseEvent, useEffect, useMemo, useState } from 'react';
@@ -79,31 +79,37 @@ function EnhancedTableHead(props: EnhancedTableProps) {
     return (
         <TableHead>
             <TableRow>
-                {headCells.map((headCell) => (
-                    <TableCell
-                        key={headCell.id}
-                        align={headCell.numeric ? 'right' : 'left'}
-                        sx={{ padding: '16px' }}
-                        padding={headCell.disablePadding ? 'none' : 'normal'}
-                        sortDirection={orderBy === headCell.id ? order : false}
-                    >
-                        <TableSortLabel
-                            active={orderBy === headCell.id}
-                            direction={orderBy === headCell.id ? order : 'asc'}
-                            onClick={createSortHandler(headCell.id)}
+                {headCells.map((headCell) => {
+                    return (
+                        <TableCell
+                            key={headCell.id}
+                            align={headCell.numeric ? 'right' : 'left'}
+                            sx={{
+                                display: (headCell.id == 'priority' || headCell.id == 'state') ? { xs: "none", sm: "table-cell" } : "table-cell",
+                                fontSize: { xs: 12, sm: 14 },
+                                padding: '16px',
+                            }}
+                            padding={headCell.disablePadding ? 'none' : 'normal'}
+                            sortDirection={orderBy === headCell.id ? order : false}
                         >
-                            {headCell.label}
-                            {orderBy === headCell.id ? (
-                                <Box component="span" sx={visuallyHidden}>
-                                    {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
-                                </Box>
-                            ) : null}
-                        </TableSortLabel>
-                    </TableCell>
-                ))}
-                <TableCell padding='checkbox'>Detalle</TableCell>
-                <TableCell padding='checkbox'>Editar</TableCell>
-                <TableCell padding='checkbox'>Eliminar</TableCell>
+                            <TableSortLabel
+                                active={orderBy === headCell.id}
+                                direction={orderBy === headCell.id ? order : 'asc'}
+                                onClick={createSortHandler(headCell.id)}
+                            >
+                                {headCell.label}
+                                {orderBy === headCell.id ? (
+                                    <Box component="span" sx={visuallyHidden}>
+                                        {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
+                                    </Box>
+                                ) : null}
+                            </TableSortLabel>
+                        </TableCell>
+                    )
+                })}
+                <TableCell padding='checkbox' sx={{ fontSize: { xs: 12, sm: 14 } }}>Detalle</TableCell>
+                <TableCell padding='checkbox' sx={{ fontSize: { xs: 12, sm: 14 } }}>Editar</TableCell>
+                <TableCell padding='checkbox' sx={{ fontSize: { xs: 12, sm: 14 } }}>Eliminar</TableCell>
             </TableRow>
 
         </TableHead>
@@ -221,17 +227,15 @@ export default function Tickets() {
         setSearchTerm(event.target.value.toLowerCase());
     };
 
-
-
     const filteredRows = rows.filter((row) =>
         row.subject.toLowerCase().includes(searchTerm),
     );
 
-    const priorityValue: Record<Priority, number> = {
-        'Muy alta': 4,
-        'Alta': 3,
-        'Media': 2,
-        'Baja': 1,
+    const priorityValue: Record<PriorityDB, number> = {
+        'URGENT': 4,
+        'HIGH': 3,
+        'MEDIUM': 2,
+        'LOW': 1,
     };
 
     const sortedRows = useMemo(
@@ -328,9 +332,15 @@ export default function Tickets() {
                         />
                     </div>
                     <div style={{ flex: 1, display: 'flex', justifyContent: 'center' }}>
-                        <Button variant="contained" color="success" onClick={() => {
-                            window.location.href = "/create";
-                        }}>
+                        <Button variant="contained" color="success"
+                            sx={{
+                                width: { xs: '130px', sm: 'auto' },
+                                fontSize: { xs: 12, sm: 13 },
+                                mt: -2
+                            }}
+                            onClick={() => {
+                                window.location.href = "/create";
+                            }}>
                             Crear nuevo requerimiento
                         </Button>
                     </div>
@@ -338,7 +348,6 @@ export default function Tickets() {
                 </div>
                 <TableContainer>
                     <Table
-                        sx={{ minWidth: 750 }}
                         aria-labelledby="tableTitle"
                     >
                         <EnhancedTableHead
@@ -366,13 +375,25 @@ export default function Tickets() {
                                     >
 
                                         <TableCell component="th" id={labelId} scope="row" padding="none"
-                                            sx={{ padding: '16px' }}
+                                            sx={{
+                                                width: { xs: "20px" },
+                                                padding: '16px',
+                                                fontSize: { xs: 10, sm: 12 }
+                                            }}
                                         >
                                             {row.code}
                                         </TableCell>
                                         <TableCell align="right">{row.subject}</TableCell>
-                                        <TableCell align="right">{Object.keys(matchPriority).find(key => matchPriority[key] === row.priority)} </TableCell>
-                                        <TableCell align="right">{matchState[row.state]}</TableCell>
+                                        <TableCell align="right"
+                                            sx={{ display: { xs: "none", sm: "table-cell" } }}
+                                        >
+                                            {Object.keys(matchPriority).find(key => matchPriority[key] === row.priority)}
+                                        </TableCell>
+                                        <TableCell align="right"
+                                            sx={{ display: { xs: "none", sm: "table-cell" } }}
+                                        >
+                                            {matchState[row.state]}
+                                        </TableCell>
                                         <TableCell padding="checkbox">
                                             <Tooltip title="Ver detalles">
                                                 <IconButton
@@ -422,8 +443,6 @@ export default function Tickets() {
                                 </TableRow>
                             )}
                         </TableBody>
-                        {/* Ver Detalles */}
-
                     </Table>
                 </TableContainer>
                 <TablePagination
