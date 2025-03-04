@@ -10,6 +10,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import { CssBaseline, useMediaQuery } from '@mui/material'
 import { darkTheme, lightTheme } from './const/colors'
 import { DetailTicket } from './routes/DetailTicket'
+import Callback from "./routes/Callback.tsx";
 
 function App() {
 
@@ -29,9 +30,10 @@ function App() {
           <Route path='/login' element={<Login />} />
           <Route path='/tickets' element={<Tickets />} />
           <Route path='/create' element={<CreateTicket />} />
-          <Route path='/ticket/:id' element={<DetailTicket />} />
+          <Route path='/ticket/:idTicket' element={<DetailTicket />} />
           <Route path='/profile/:id' element={<UserProfile />} />
           <Route path='/support' element={<Support />} />
+          <Route path='/callback' element={<Callback />} />
           <Route path='*' element={<NotFound />} />
         </Routes>
       </ThemeProvider>

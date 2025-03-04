@@ -1,4 +1,3 @@
-import * as React from 'react';
 import Box from '@mui/material/Box';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -14,14 +13,16 @@ import Paper from '@mui/material/Paper';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import { visuallyHidden } from '@mui/utils';
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from '@mui/material';
+import { Alert, Button, Dialog, DialogActions, DialogContent, DialogTitle, Snackbar, TextField } from '@mui/material';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
-import { rows } from '../const/dummyData';
-import { Priority, Ticket } from '../types/types';
+import { rows as dummyTickets } from '../const/dummyData';
+import { matchPriority, matchState, PriorityDB, Ticket } from '../types/types';
 import { useNavigate } from 'react-router-dom';
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
+import { ChangeEvent, MouseEvent, useEffect, useMemo, useState } from 'react';
+import { deleteTicket, getTickets } from '../services/ticketService';
 
 
 type Order = 'asc' | 'desc';
@@ -53,17 +54,17 @@ const headCells: readonly HeadCell[] = [
         label: 'Prioridad',
     },
     {
-        id: 'date',
+        id: 'state',
         numeric: true,
         disablePadding: false,
-        label: 'Fecha',
+        label: 'Estado',
     },
 ];
 
 interface EnhancedTableProps {
     numSelected: number;
-    onRequestSort: (event: React.MouseEvent<unknown>, property: keyof Ticket) => void;
-    onSelectAllClick: (event: React.ChangeEvent<HTMLInputElement>) => void;
+    onRequestSort: (event: MouseEvent<unknown>, property: keyof Ticket) => void;
+    onSelectAllClick: (event: ChangeEvent<HTMLInputElement>) => void;
     order: Order;
     orderBy: string;
     rowCount: number;
@@ -71,38 +72,49 @@ interface EnhancedTableProps {
 
 function EnhancedTableHead(props: EnhancedTableProps) {
     const { order, orderBy, onRequestSort } = props;
-    const createSortHandler = (property: keyof Ticket) => (event: React.MouseEvent<unknown>) => {
+    const createSortHandler = (property: keyof Ticket) => (event: MouseEvent<unknown>) => {
         onRequestSort(event, property);
     };
 
     return (
         <TableHead>
             <TableRow>
-                {headCells.map((headCell) => (
-                    <TableCell
-                        key={headCell.id}
-                        align={headCell.numeric ? 'right' : 'left'}
-                        sx={{ padding: '16px' }}
-                        padding={headCell.disablePadding ? 'none' : 'normal'}
-                        sortDirection={orderBy === headCell.id ? order : false}
-                    >
-                        <TableSortLabel
-                            active={orderBy === headCell.id}
-                            direction={orderBy === headCell.id ? order : 'asc'}
-                            onClick={createSortHandler(headCell.id)}
+                {headCells.map((headCell) => {
+
+                    return (
+                        <TableCell
+                            key={headCell.id}
+                            align={(headCell.id == 'subject') ? 'center' : headCell.numeric ? 'right' : 'left'}
+                            sx={{
+                                textAlign: (headCell.id == 'subject') ? { xs: 'center', sm: 'right' } : headCell.numeric ? 'right' : 'left',
+                                display: (headCell.id == 'priority' || headCell.id == 'state') ? { xs: "none", sm: "table-cell" } : "table-cell",
+                                fontSize: { xs: 11, sm: 14 },
+                                maxWidth: 95,
+                                paddingLeft: (headCell.id == 'id') ? "16px" : 0
+                            }}
+                            padding={headCell.disablePadding ? 'none' : 'normal'}
+                            sortDirection={orderBy === headCell.id ? order : false}
                         >
-                            {headCell.label}
-                            {orderBy === headCell.id ? (
-                                <Box component="span" sx={visuallyHidden}>
-                                    {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
-                                </Box>
-                            ) : null}
-                        </TableSortLabel>
-                    </TableCell>
-                ))}
-                <TableCell padding='checkbox'>Detalle</TableCell>
-                <TableCell padding='checkbox'>Editar</TableCell>
-                <TableCell padding='checkbox'>Eliminar</TableCell>
+                            <TableSortLabel
+                                active={orderBy === headCell.id}
+                                direction={orderBy === headCell.id ? order : 'asc'}
+                                onClick={createSortHandler(headCell.id)}
+                            >
+                                {headCell.label}
+                                {orderBy === headCell.id ? (
+                                    <Box component="span" sx={visuallyHidden}>
+                                        {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
+                                    </Box>
+                                ) : null}
+                            </TableSortLabel>
+                        </TableCell>
+                    )
+                })}
+                <TableCell padding='checkbox' sx={{ fontSize: { xs: 11, sm: 14 } }}
+                    align='center   '
+                >Detalle</TableCell>
+                <TableCell padding='checkbox' sx={{ fontSize: { xs: 11, sm: 14 } }}>Editar</TableCell>
+                <TableCell padding='checkbox' sx={{ fontSize: { xs: 11, sm: 14 } }}>Eliminar</TableCell>
             </TableRow>
 
         </TableHead>
@@ -145,21 +157,36 @@ function EnhancedTableToolbar() {
 
 export default function Tickets() {
 
-    const [order, setOrder] = React.useState<Order>('asc');
-    const [orderBy, setOrderBy] = React.useState<keyof Ticket>('subject');
-    const [selected, setSelected] = React.useState<readonly number[]>([]);
-    const [page, setPage] = React.useState(0);
-    const [rowsPerPage, setRowsPerPage] = React.useState(5);
-    const [searchTerm, setSearchTerm] = React.useState('');
+    const [order, setOrder] = useState<Order>('asc');
+    const [orderBy, setOrderBy] = useState<keyof Ticket>('subject');
+    const [selected, setSelected] = useState<readonly number[]>([]);
+    const [page, setPage] = useState(0);
+    const [rows, setRows] = useState<Ticket[]>(dummyTickets);
+    const [rowsPerPage, setRowsPerPage] = useState(5);
+    const [searchTerm, setSearchTerm] = useState('');
     const navigate = useNavigate();
 
-    const handleRequestSort = (_event: React.MouseEvent<unknown>, property: keyof Ticket) => {
+    useEffect(() => {
+        const fetchTickets = async () => {
+            const res = await getTickets()
+            if (!res) {
+                console.log('err');
+            }
+            console.log("res");
+            console.log(res);
+            setRows(res.content as Ticket[])
+        }
+
+        fetchTickets()
+    }, [])
+
+    const handleRequestSort = (_event: MouseEvent<unknown>, property: keyof Ticket) => {
         const isAsc = orderBy === property && order === 'asc';
         setOrder(isAsc ? 'desc' : 'asc');
         setOrderBy(property);
     };
 
-    const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const handleSelectAllClick = (event: ChangeEvent<HTMLInputElement>) => {
         if (event.target.checked) {
             const newSelected = rows.map((n) => n.id);
             setSelected(newSelected);
@@ -168,7 +195,7 @@ export default function Tickets() {
         setSelected([]);
     };
 
-    const handleClick = (_event: React.MouseEvent<unknown>, row: any) => {
+    const handleClick = (_event: MouseEvent<unknown>, row: any) => {
         const selectedIndex = selected.indexOf(row.id);
         let newSelected: readonly number[] = [];
 
@@ -192,7 +219,7 @@ export default function Tickets() {
         setPage(newPage);
     };
 
-    const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChangeRowsPerPage = (event: ChangeEvent<HTMLInputElement>) => {
         setRowsPerPage(parseInt(event.target.value, 10));
         setPage(0);
     };
@@ -201,24 +228,22 @@ export default function Tickets() {
     const emptyRows =
         page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
 
-    const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const handleSearch = (event: ChangeEvent<HTMLInputElement>) => {
         setSearchTerm(event.target.value.toLowerCase());
     };
-
-
 
     const filteredRows = rows.filter((row) =>
         row.subject.toLowerCase().includes(searchTerm),
     );
 
-    const priorityValue: Record<Priority, number> = {
-        'Muy alta': 4,
-        'Alta': 3,
-        'Media': 2,
-        'Baja': 1,
+    const priorityValue: Record<PriorityDB, number> = {
+        'URGENT': 4,
+        'HIGH': 3,
+        'MEDIUM': 2,
+        'LOW': 1,
     };
 
-    const sortedRows = React.useMemo(
+    const sortedRows = useMemo(
         () =>
             [...filteredRows].sort((a, b) => {
                 if (orderBy === 'priority') {
@@ -243,18 +268,38 @@ export default function Tickets() {
         page * rowsPerPage,
         page * rowsPerPage + rowsPerPage,
     );
-    const [open, setOpen] = React.useState(false);
 
-    const handleClickOpen = () => {
+    const [ticketClicked, setTicketClicked] = useState<Ticket>();
+    const [open, setOpen] = useState(false);
+    const [openToastDelete, setOpenToastDelete] = useState(false);
+
+    const handleClickOpen = (row: Ticket) => {
+        setTicketClicked(row)
         setOpen(true);
     };
+
+    const handleCloseToast = () => {
+        setOpenToastDelete(false)
+    }
 
     const handleClose = () => {
         setOpen(false);
     };
 
+    const handleDelete = async () => {
+        setOpen(false);
+        if (!ticketClicked) return
+        const completeDelete = await deleteTicket(ticketClicked.id)
+        if (completeDelete) setOpenToastDelete(true)
+    };
+
     return (
         <Paper sx={{ width: '100%', flex: 1, flexDirection: 'row', justifySelf: 'center', justifyContent: 'center', alignItems: 'center', backgroundColor: "#ccc", marginTop: 5 }}>
+            <Snackbar open={openToastDelete} autoHideDuration={6000} onClose={handleCloseToast} anchorOrigin={{ vertical: "top", horizontal: "center" }}>
+                <Alert onClose={handleCloseToast} severity={'success'} variant="filled" sx={{ width: "100%" }}>
+                    El ticket se elimino con exito!
+                </Alert>
+            </Snackbar>
             <Dialog
                 open={open}
                 onClose={handleClose}
@@ -262,7 +307,7 @@ export default function Tickets() {
                 aria-describedby="alert-dialog-description"
             >
                 <DialogTitle id="alert-dialog-title">
-                    {"Se eliminará el requerimiento"}
+                    {`Se eliminará el requerimiento "${ticketClicked?.code}"`}
                 </DialogTitle>
                 <DialogContent>
                     <div>
@@ -271,11 +316,12 @@ export default function Tickets() {
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleClose} variant='contained'>Cancelar</Button>
-                    <Button onClick={handleClose} autoFocus color='error' variant='contained'>
+                    <Button onClick={handleDelete} autoFocus color='error' variant='contained'>
                         Eliminar
                     </Button>
                 </DialogActions>
             </Dialog>
+
             <Paper sx={{ width: '100%' }}>
                 <EnhancedTableToolbar />
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
@@ -291,9 +337,15 @@ export default function Tickets() {
                         />
                     </div>
                     <div style={{ flex: 1, display: 'flex', justifyContent: 'center' }}>
-                        <Button variant="contained" color="success" onClick={() => {
-                            window.location.href = "/create";
-                        }}>
+                        <Button variant="contained" color="success"
+                            sx={{
+                                width: { xs: '130px', sm: 'auto' },
+                                fontSize: { xs: 12, sm: 13 },
+                                mt: -2
+                            }}
+                            onClick={() => {
+                                window.location.href = "/create";
+                            }}>
                             Crear nuevo requerimiento
                         </Button>
                     </div>
@@ -301,7 +353,6 @@ export default function Tickets() {
                 </div>
                 <TableContainer>
                     <Table
-                        sx={{ minWidth: 750 }}
                         aria-labelledby="tableTitle"
                     >
                         <EnhancedTableHead
@@ -316,7 +367,6 @@ export default function Tickets() {
                             {paginatedRows.map((row, index) => {
                                 const isItemSelected = selected.indexOf(row.id) !== -1;
                                 const labelId = `enhanced-table-checkbox-${index}`;
-
                                 return (
                                     <TableRow
                                         style={{ cursor: 'pointer' }}
@@ -330,13 +380,29 @@ export default function Tickets() {
                                     >
 
                                         <TableCell component="th" id={labelId} scope="row" padding="none"
-                                            sx={{ padding: '16px' }}
+                                            sx={{
+                                                width: { xs: "20px" },
+                                                padding: '16px',
+                                                fontSize: { xs: 10, sm: 12 }
+                                            }}
                                         >
                                             {row.code}
                                         </TableCell>
-                                        <TableCell align="right">{row.subject}</TableCell>
-                                        <TableCell align="right">{row.priority}</TableCell>
-                                        <TableCell align="right">{row.date}</TableCell>
+                                        <TableCell align="right"
+                                            sx={{
+                                                fontSize: 12,
+                                            }}
+                                        >{row.subject}</TableCell>
+                                        <TableCell align="right"
+                                            sx={{ display: { xs: "none", sm: "table-cell" } }}
+                                        >
+                                            {Object.keys(matchPriority).find(key => matchPriority[key] === row.priority)}
+                                        </TableCell>
+                                        <TableCell align="right"
+                                            sx={{ display: { xs: "none", sm: "table-cell" } }}
+                                        >
+                                            {matchState[row.state]}
+                                        </TableCell>
                                         <TableCell padding="checkbox">
                                             <Tooltip title="Ver detalles">
                                                 <IconButton
@@ -366,7 +432,7 @@ export default function Tickets() {
                                                 <IconButton
                                                     onClick={(event) => {
                                                         event.stopPropagation();
-                                                        handleClickOpen();
+                                                        handleClickOpen(row);
                                                     }}
                                                 >
                                                     <DeleteIcon color='error' />
@@ -386,8 +452,6 @@ export default function Tickets() {
                                 </TableRow>
                             )}
                         </TableBody>
-                        {/* Ver Detalles */}
-
                     </Table>
                 </TableContainer>
                 <TablePagination

@@ -10,12 +10,15 @@ import {
     Link,
     Fab,
     Paper,
+    Alert,
+    Snackbar,
 } from "@mui/material";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import SupportAgentIcon from "@mui/icons-material/SupportAgent";
 import { z } from "zod";
 import { useNavigate } from "react-router-dom";
+import authService from "../services/authService";
 
 const loginSchema = z.object({
     email: z.string().email("Debe ser un email válido"),
@@ -27,12 +30,21 @@ const loginSchema = z.object({
 });
 
 const ExternalLogin: React.FC = () => {
+
     const [formData, setFormData] = useState({ email: "", password: "" });
     const [showPassword, setShowPassword] = useState(false);
+    const [openToastError, setOpenToastError] = useState(false);
     const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+
     const navigate = useNavigate();
 
     const handleClickShowPassword = () => setShowPassword(!showPassword);
+
+    const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter') {
+            handleLogin();
+        }
+    };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -56,9 +68,23 @@ const ExternalLogin: React.FC = () => {
         }
     };
 
-    const handleLogin = () => {
+    const handleCloseToast = () => {
+        setOpenToastError(false)
+    }
+
+    const handleLogin = async () => {
         if (validateForm()) {
             console.log("Iniciar sesión con:", formData);
+
+            // PARA REGISTRARSE DESCOMENTAR ESTA LINEA
+            // authService.signup(formData.email, formData.password);
+
+            const resLogin = await authService.login(formData.email, formData.password);
+            if (resLogin?.description == "Wrong email or password.") {
+                setOpenToastError(true)
+                return
+            }
+
             navigate('/tickets')
         }
     };
@@ -80,6 +106,12 @@ const ExternalLogin: React.FC = () => {
                 justifyContent: "center",
             }}
         >
+            <Snackbar open={openToastError} autoHideDuration={6000} onClose={handleCloseToast} anchorOrigin={{ vertical: "top", horizontal: "center" }}>
+                <Alert onClose={handleCloseToast} severity={'error'} variant="filled" sx={{ width: "100%" }}>
+                    El email o la contraseña son incorrectos
+                </Alert>
+            </Snackbar>
+
             <motion.div
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -111,6 +143,7 @@ const ExternalLogin: React.FC = () => {
                         type="email"
                         placeholder="Ingresá tu email"
                         value={formData.email}
+                        onKeyDown={handleKeyPress}
                         onChange={handleChange}
                         sx={{ mb: 2, bgcolor: "white", borderColor: "#2196f3" }}
                         error={!!errors.email}
@@ -123,6 +156,7 @@ const ExternalLogin: React.FC = () => {
                         label="Contraseña"
                         variant="outlined"
                         fullWidth
+                        onKeyDown={handleKeyPress}
                         name="password"
                         type={showPassword ? "text" : "password"}
                         placeholder="Ingresá tu contraseña"

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
     Box,
     Typography,
@@ -8,33 +8,70 @@ import {
     TextField,
     Button,
     Tooltip,
+    Snackbar,
+    Alert,
 } from "@mui/material";
 import StarIcon from "@mui/icons-material/Star";
-import { Navigate, useParams } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { getUserById } from "../services/userService";
+import { User } from "../types/types";
+
 const UserProfile: React.FC = () => {
 
-    const navigate = useNavigate();
-    let { id } = useParams();
+    let { id: idUser } = useParams();
+    const id = Number(idUser)
     const [isEditing, setIsEditing] = useState(false);
-    const [profile, setProfile] = useState({
-        id,
-        nombre: "Romeo",
-        apellido: "Monfroglio",
-        email: "romeokai@gmail.com",
-    });
+    const [profile, setProfile] = useState<User>();
+    const [openToastModify, setOpenToastModify] = useState(false);
+    const [openToastError, setOpenToastError] = useState(false);
+    const navigate = useNavigate();
 
+    useEffect(() => {
+        const fetchUser = async () => {
+            const res = await getUserById(id)
+            if (!res) {
+                setOpenToastError(true)
+                return
+            }
+            setProfile(res)
+            console.log("res");
+            console.log(res);
+        }
+        fetchUser()
+    }, [])
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        setProfile((prevProfile) => ({ ...prevProfile, [name]: value }));
+    const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { value } = e.target;
+        setProfile((prevProfile: any) => ({
+            ...prevProfile,
+            name: value
+        }));
     };
 
-   
+
+    const handlePositionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { value } = e.target;
+        setProfile((prevProfile: any) => ({ ...prevProfile, position: value }));
+    };
+
+    const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { value } = e.target;
+        setProfile((prevProfile: any) => ({ ...prevProfile, email: value }));
+    };
 
     const toggleEditMode = () => {
         setIsEditing((prev) => !prev);
     };
+
+    const handleCloseToast = () => {
+        setOpenToastError(false)
+        setOpenToastModify(false)
+    }
+    const handleCloseToastError = () => {
+        setOpenToastError(false)
+        navigate('/tickets')
+    }
+
 
     return (
         <Box
@@ -43,6 +80,26 @@ const UserProfile: React.FC = () => {
                 p: 3,
             }}
         >
+            <Snackbar open={openToastModify} autoHideDuration={6000} onClose={handleCloseToast} anchorOrigin={{ vertical: 'top', horizontal: 'center' }} >
+                <Alert
+                    onClose={handleCloseToast}
+                    severity="success"
+                    variant="filled"
+                    sx={{ width: '100%' }}
+                >
+                    Se realizaron correctamente los cambios
+                </Alert>
+            </Snackbar>
+            <Snackbar open={openToastError} autoHideDuration={6000} onClose={handleCloseToastError} anchorOrigin={{ vertical: 'top', horizontal: 'center' }} >
+                <Alert
+                    onClose={handleCloseToastError}
+                    severity="error"
+                    variant="filled"
+                    sx={{ width: '100%' }}
+                >
+                    El usuario con id {id} no existe
+                </Alert>
+            </Snackbar>
             <Box
                 sx={{
                     maxWidth: "800px",
@@ -53,10 +110,7 @@ const UserProfile: React.FC = () => {
                     borderRadius: 2,
                 }}
             >
-                <Typography variant="h4" sx={{ mb: 4 }}>
-                    Perfil
-                </Typography>
-                <Grid container spacing={3}>
+                <Grid container spacing={3} sx={{ pt: 4 }}>
 
                     <Grid item xs={12} md={4}>
                         <Box
@@ -91,18 +145,18 @@ const UserProfile: React.FC = () => {
                                 }}
                             />
                             <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-                                Romeokai
+                                {profile?.username}
                             </Typography>
                             <Typography
                                 variant="body2"
                                 color="text.secondary"
                                 sx={{ fontStyle: "italic" }}
                             >
-                                Departamento: XXXXXXXX
+                                Departamento: {profile?.company}
                                 <br />
-                                Cargo: XXXXXXXX
+                                Cargo: {profile?.position ?? "Desarrollador"}
                                 <br />
-                                Legajo: 99999
+                                Cuil: {profile?.cuil}
                             </Typography>
                         </Box>
                     </Grid>
@@ -113,30 +167,29 @@ const UserProfile: React.FC = () => {
                             <TextField
                                 label="Nombre"
                                 variant="outlined"
+                                name="name"
                                 fullWidth
-                                value={profile.nombre}
-                                name="nombre"
-                                onChange={handleInputChange}
+                                value={profile?.name || ""}
+                                onChange={handleNameChange}
                                 disabled={!isEditing}
                                 sx={{ mb: 2 }}
                             />
                             <TextField
-                                label="Apellido"
+                                label="Cargo"
                                 variant="outlined"
                                 fullWidth
-                                value={profile.apellido}
-                                name="apellido"
-                                onChange={handleInputChange}
+                                value={profile?.position || ""}
+                                onChange={handlePositionChange}
                                 disabled={!isEditing}
                                 sx={{ mb: 2 }}
                             />
                             <TextField
-                                label="Email"
+                                label='Email'
+                                name='email'
                                 variant="outlined"
                                 fullWidth
-                                value={profile.email}
-                                name="email"
-                                onChange={handleInputChange}
+                                value={profile?.email || ""}
+                                onChange={handleEmailChange}
                                 disabled={!isEditing}
                                 sx={{ mb: 2 }}
                             />
