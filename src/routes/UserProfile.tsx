@@ -10,10 +10,11 @@ import {
     Tooltip,
 } from "@mui/material";
 import StarIcon from "@mui/icons-material/Star";
-import { useParams } from "react-router-dom";
-
+import { Navigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 const UserProfile: React.FC = () => {
 
+    const navigate = useNavigate();
     let { id } = useParams();
     const [isEditing, setIsEditing] = useState(false);
     const [profile, setProfile] = useState({
@@ -29,6 +30,7 @@ const UserProfile: React.FC = () => {
         setProfile((prevProfile) => ({ ...prevProfile, [name]: value }));
     };
 
+   
 
     const toggleEditMode = () => {
         setIsEditing((prev) => !prev);
@@ -139,13 +141,21 @@ const UserProfile: React.FC = () => {
                                 sx={{ mb: 2 }}
                             />
                             <Divider sx={{ my: 2 }} />
-                            <Button
-                                variant="contained"
-                                color={isEditing ? "success" : "primary"}
-                                onClick={toggleEditMode}
-                            >
-                                {isEditing ? "Guardar" : "Editar"}
-                            </Button>
+                            
+                            <Grid item xs={12} alignContent={"end"}>
+                                <Button variant="contained" color="error" onClick={() => navigate(`/tickets`)}>Cancelar</Button>   
+                            </Grid>
+                            
+                            <Grid>
+                                <Button
+                                    variant="contained"
+                                    color={isEditing ? "success" : "primary"}
+                                    onClick={toggleEditMode}
+                                >
+                                    {isEditing ? "Guardar" : "Editar"}
+                                </Button>
+                            </Grid>
+            
                         </Box>
                     </Grid>
                 </Grid>
