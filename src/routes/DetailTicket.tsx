@@ -333,7 +333,10 @@ export const DetailTicket: React.FC<TicketFormProps> = ({ onSubmit }) => {
                         <Button variant="contained" color="success" fullWidth onClick={handleEdit} disabled={isEditing}>Editar</Button>
                     </Grid>
                 </Grid>
-            }
+                <Grid item xs={12} sm={4}>
+                    <Button variant="contained" color="error" onClick={() => navigate(`/tickets`)}>Volver</Button>   
+                </Grid>
+            </Grid>
 
         </Box >
     );

@@ -74,6 +74,7 @@ export default function CreateTicket() {
         if (!selectedCategory || !prioridad) return;
 
         const newTicket: BaseTicket = {
+
             subject: subject,
             description: description,
             priority: matchPriority[prioridad] as PriorityDB,
@@ -94,6 +95,7 @@ export default function CreateTicket() {
                 setOpenToastError(true)
                 return;
             }
+
             console.log("res", res);
             setOpen(true);
             setTimeout(() => {
