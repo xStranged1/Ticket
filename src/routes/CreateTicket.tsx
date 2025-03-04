@@ -1,19 +1,4 @@
-import {
-    Box,
-    TextField,
-    Typography,
-    Button,
-    Select,
-    MenuItem,
-    InputLabel,
-    FormControl,
-    Grid,
-    IconButton,
-    Paper,
-    Snackbar,
-    Alert,
-} from "@mui/material";
-
+import { Box, TextField, Typography, Button, Select, MenuItem, InputLabel, FormControl, Grid, IconButton, Paper, Snackbar, Alert, SnackbarCloseReason } from "@mui/material";
 import UploadFileIcon from "@mui/icons-material/UploadFile";
 import { createTicket } from "../services/ticketService";
 import { BaseTicket, Category, matchPriority, Priority, PriorityDB } from "../types/types";
@@ -26,7 +11,10 @@ export default function CreateTicket() {
     const [categories, setCategories] = useState<Category[]>([]);
     const [selectedCategory, setSelectedCategory] = useState<Category | "">("");
     const [prioridad, setPrioridad] = useState<Priority | "">("");
+    const [subject, setSubject] = useState("");
+    const [description, setDescription] = useState("");
     const [open, setOpen] = useState(false);
+    const [openToastError, setOpenToastError] = useState(false);
     const [file, setFile] = useState<File | null>(null);
 
     const navigate = useNavigate();
@@ -72,30 +60,38 @@ export default function CreateTicket() {
         setOpen(false);
     };
 
+    const handleCloseError = (
+        event?: React.SyntheticEvent | Event,
+        reason?: SnackbarCloseReason
+    ) => {
+        if (reason === "clickaway") {
+            return;
+        }
+        setOpenToastError(false);
+    };
+
     const handleSubmit = async () => {
         if (!selectedCategory || !prioridad) return;
 
         const newTicket: BaseTicket = {
-            subject: "Título de ejemplo",
-            description: "Descripción de ejemplo",
+            subject: subject,
+            description: description,
             priority: matchPriority[prioridad] as PriorityDB,
             categoryId: selectedCategory.id,
-            creatorId: 2,
+            typeId: selectedCategory.type.id,
+            creatorId: 1,
         };
-
-        console.log("newTicket", newTicket);
 
         const formData = new FormData();
         formData.append("requirement", new Blob([JSON.stringify(newTicket)], { type: "application/json" }));
-
         if (file) {
-            formData.append("files", file);
+            formData.append('files', file);
         }
-
         try {
-            const res = await createTicket(formData); // Asegúrate de que la función createTicket acepte FormData
+            const res = await createTicket(formData);
             if (!res) {
                 console.error("Error al crear ticket");
+                setOpenToastError(true)
                 return;
             }
             console.log("res", res);
@@ -125,15 +121,24 @@ export default function CreateTicket() {
                     ¡El ticket se creó con éxito!
                 </Alert>
             </Snackbar>
+            <Snackbar open={openToastError} autoHideDuration={6000} onClose={handleCloseError} anchorOrigin={{ vertical: "top", horizontal: "center" }}>
+                <Alert onClose={handleCloseError} severity="error" variant="filled" sx={{ width: "100%" }}>
+                    Hubo un error creando el ticket
+                </Alert>
+            </Snackbar>
             <Typography variant="h5" sx={{ mb: 3, fontWeight: "bold" }}>
                 Crear Ticket #ID2012
             </Typography>
             <Grid container spacing={2}>
                 <Grid item xs={12}>
-                    <TextField label="Asunto" variant="outlined" fullWidth />
+                    <TextField label="Asunto" variant="outlined" fullWidth
+                        onChange={(text) => { setSubject(text.target.value) }}
+                    />
                 </Grid>
                 <Grid item xs={12}>
-                    <TextField label="Descripción" variant="outlined" fullWidth multiline rows={4} />
+                    <TextField label="Descripción" variant="outlined" fullWidth multiline rows={4}
+                        onChange={(text) => { setDescription(text.target.value) }}
+                    />
                 </Grid>
                 <Grid item xs={12}>
                     <TextField label="Usuario destinatario" variant="outlined" fullWidth />
@@ -168,7 +173,7 @@ export default function CreateTicket() {
                             label="Prioridad"
 
                         >
-                            <MenuItem value="Baja">Urgente</MenuItem>
+                            <MenuItem value="Muy alta">Muy alta</MenuItem>
                             <MenuItem value="Alta">Alta</MenuItem>
                             <MenuItem value="Media">Media</MenuItem>
                             <MenuItem value="Baja">Baja</MenuItem>

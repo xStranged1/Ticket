@@ -80,14 +80,17 @@ function EnhancedTableHead(props: EnhancedTableProps) {
         <TableHead>
             <TableRow>
                 {headCells.map((headCell) => {
+
                     return (
                         <TableCell
                             key={headCell.id}
-                            align={headCell.numeric ? 'right' : 'left'}
+                            align={(headCell.id == 'subject') ? 'center' : headCell.numeric ? 'right' : 'left'}
                             sx={{
+                                textAlign: (headCell.id == 'subject') ? { xs: 'center', sm: 'right' } : headCell.numeric ? 'right' : 'left',
                                 display: (headCell.id == 'priority' || headCell.id == 'state') ? { xs: "none", sm: "table-cell" } : "table-cell",
-                                fontSize: { xs: 12, sm: 14 },
-                                padding: '16px',
+                                fontSize: { xs: 11, sm: 14 },
+                                maxWidth: 95,
+                                paddingLeft: (headCell.id == 'id') ? "16px" : 0
                             }}
                             padding={headCell.disablePadding ? 'none' : 'normal'}
                             sortDirection={orderBy === headCell.id ? order : false}
@@ -107,9 +110,11 @@ function EnhancedTableHead(props: EnhancedTableProps) {
                         </TableCell>
                     )
                 })}
-                <TableCell padding='checkbox' sx={{ fontSize: { xs: 12, sm: 14 } }}>Detalle</TableCell>
-                <TableCell padding='checkbox' sx={{ fontSize: { xs: 12, sm: 14 } }}>Editar</TableCell>
-                <TableCell padding='checkbox' sx={{ fontSize: { xs: 12, sm: 14 } }}>Eliminar</TableCell>
+                <TableCell padding='checkbox' sx={{ fontSize: { xs: 11, sm: 14 } }}
+                    align='center   '
+                >Detalle</TableCell>
+                <TableCell padding='checkbox' sx={{ fontSize: { xs: 11, sm: 14 } }}>Editar</TableCell>
+                <TableCell padding='checkbox' sx={{ fontSize: { xs: 11, sm: 14 } }}>Eliminar</TableCell>
             </TableRow>
 
         </TableHead>
@@ -383,7 +388,11 @@ export default function Tickets() {
                                         >
                                             {row.code}
                                         </TableCell>
-                                        <TableCell align="right">{row.subject}</TableCell>
+                                        <TableCell align="right"
+                                            sx={{
+                                                fontSize: 12,
+                                            }}
+                                        >{row.subject}</TableCell>
                                         <TableCell align="right"
                                             sx={{ display: { xs: "none", sm: "table-cell" } }}
                                         >

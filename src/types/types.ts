@@ -30,6 +30,7 @@ export interface BaseTicket {
     subject: string,
     creatorId: number,
     categoryId: number,
+    typeId: number,
     description: string,
     priority: PriorityDB,
     requirements?: Ticket[],

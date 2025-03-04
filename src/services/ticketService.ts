@@ -1,19 +1,30 @@
-import { BaseTicket, Ticket } from "../types/types";
+import { API_URL } from "../const/config";
+import { Ticket } from "../types/types";
 import { axiosClient } from "./apiService";
+import Cookies from 'js-cookie';
 
-export const createTicket = async (ticket: BaseTicket): Promise<Ticket | false> => {
+export const createTicket = async (ticket: FormData): Promise<Ticket | false> => {
     try {
-        const response = await axiosClient.post(`/requirement-sv/api/requirements`, ticket, {
+        const token = Cookies.get('accessToken')
+        const response = await fetch(`${API_URL}/requirement-sv/api/requirements`, {
+            method: 'POST',
             headers: {
-                "Content-Type": "multipart/form-data"
-            }
+                'Authorization': `Bearer ${token}`
+            },
+            body: ticket
         });
-        if (response.status == 201) return response.data;
-        return false
-    } catch (error: any) {
-        console.log(error);
+
+        if (!response.ok) {
+            return false
+        }
+
+        const result = await response.json();
+        return result
+    } catch (error) {
+        console.error('Error creando ticket:', error);
         return false
     }
+
 }
 
 export const getTickets = async () => {
