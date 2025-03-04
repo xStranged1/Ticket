@@ -121,7 +121,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
     );
 }
 function EnhancedTableToolbar() {
-    const idUser = 13
+    const idUser = 1
 
     return (
         <Toolbar

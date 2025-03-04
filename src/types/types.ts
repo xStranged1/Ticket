@@ -19,10 +19,11 @@ export const matchState = {
 
 // ESTE TIPO ES IGUAL AL DTO DEL BACK
 export interface Type {
-    id: number,
+    id: number, 
     description: string,
     code: string, // 3 digitos
 }
+
 
 export type State = "OPEN" | "ASSIGNED" | "CLOSED"
 

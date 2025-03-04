@@ -48,6 +48,7 @@ const UserProfile: React.FC = () => {
         }));
     };
 
+
     const handlePositionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { value } = e.target;
         setProfile((prevProfile: any) => ({ ...prevProfile, position: value }));
@@ -193,13 +194,23 @@ const UserProfile: React.FC = () => {
                                 sx={{ mb: 2 }}
                             />
                             <Divider sx={{ my: 2 }} />
-                            <Button
-                                variant="contained"
-                                color={isEditing ? "success" : "primary"}
-                                onClick={toggleEditMode}
-                            >
-                                {isEditing ? "Guardar" : "Editar"}
-                            </Button>
+
+                            <Grid item xs={12} alignContent={"end"}>
+                                <Button variant="contained" color="error" onClick={() => navigate(`/tickets`)}>Cancelar</Button>
+                            </Grid>
+
+                            <Grid sx={{
+                                display: 'flex', flexDirection: "row", justifyContent: 'space-between', alignItems: 'center', gap: 10
+                            }}>
+                                <Button
+                                    variant="contained"
+                                    color={isEditing ? "success" : "primary"}
+                                    onClick={toggleEditMode}
+                                >
+                                    {isEditing ? "Guardar" : "Editar"}
+                                </Button>
+                            </Grid>
+
                         </Box>
                     </Grid>
                 </Grid>
