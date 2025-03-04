@@ -68,7 +68,6 @@ export const deleteTicket = async (id: number) => {
         return false
     } catch (error: any) {
         console.log("error");
-        console.log(error);
         return false
     }
 }

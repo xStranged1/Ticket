@@ -3,7 +3,7 @@ import { Route, Routes } from 'react-router-dom'
 import Tickets from './routes/Tickets'
 import Login from './routes/Login'
 import NotFound from './routes/NotFound'
-import CreateTicket from './routes/CreateTicket'
+import CreateTicket from './routes/createTicket/CreateTicket.tsx'
 import UserProfile from './routes/UserProfile'
 import Support from './routes/Support'
 import { ThemeProvider } from '@mui/material/styles';

@@ -111,7 +111,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
                     )
                 })}
                 <TableCell padding='checkbox' sx={{ fontSize: { xs: 11, sm: 14 } }}
-                    align='center   '
+                    align='center'
                 >Detalle</TableCell>
                 <TableCell padding='checkbox' sx={{ fontSize: { xs: 11, sm: 14 } }}>Editar</TableCell>
                 <TableCell padding='checkbox' sx={{ fontSize: { xs: 11, sm: 14 } }}>Eliminar</TableCell>
@@ -121,7 +121,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
     );
 }
 function EnhancedTableToolbar() {
-    const idUser = 13
+    const idUser = 1
 
     return (
         <Toolbar

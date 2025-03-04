@@ -1,4 +1,4 @@
-import { Category, Ticket } from "../types/types";
+import { Category, Comment, Ticket } from "../types/types";
 
 export const dummyCategories: Category[] = [ //Todo arreglar esto
     {
@@ -69,4 +69,87 @@ export const rows: Ticket[] = [
     { code: "C048", id: 48, subject: "Rendimiento lento", date: "12/18/2024", priority: "LOW" },
     { code: "C049", id: 49, subject: "FHIGH de recursos", date: "12/19/2024", priority: "URGENT" },
     { code: "C050", id: 50, subject: "Fallo en la base de datos", date: "12/20/2024", priority: "HIGH" }
+];
+
+export const dummyComments: Comment[] = [
+    {
+        id: 1,
+        subject: "Error en la funcionalidad",
+        comment: "Al intentar guardar los cambios, la página se congela.",
+        description: "Este error ocurre cuando el usuario intenta guardar información en el formulario de contacto. Necesita ser investigado.",
+        userId: 101,
+        requirementId: 5
+    },
+    {
+        id: 2,
+        subject: "Sugerencia de mejora",
+        comment: "Sería útil agregar una opción para deshacer cambios.",
+        description: "Una funcionalidad de deshacer permitiría a los usuarios corregir rápidamente errores sin tener que recargar la página.",
+        userId: 102,
+        requirementId: 7
+    },
+    {
+        id: 3,
+        subject: "Rendimiento",
+        comment: "El tiempo de carga es demasiado largo al acceder a la página principal.",
+        description: "Se recomienda optimizar las imágenes y el código para mejorar el rendimiento de la página.",
+        userId: 103,
+        requirementId: 2
+    },
+    {
+        id: 4,
+        subject: "UI/UX",
+        comment: "El diseño del botón 'Enviar' es difícil de ver en dispositivos móviles.",
+        description: "Se sugiere cambiar el color del botón para que sea más visible en pantallas pequeñas.",
+        userId: 104,
+        requirementId: 8
+    },
+    {
+        id: 5,
+        subject: "Accesibilidad",
+        comment: "No se puede navegar por el sitio usando solo el teclado.",
+        description: "Es necesario agregar soporte para navegación por teclado, especialmente para usuarios con discapacidades.",
+        userId: 105,
+        requirementId: 1
+    },
+    {
+        id: 6,
+        subject: "Seguridad",
+        comment: "El formulario de inicio de sesión no está utilizando HTTPS.",
+        description: "Se debe implementar HTTPS para proteger las credenciales de los usuarios durante la transmisión de datos.",
+        userId: 106,
+        requirementId: 3
+    },
+    {
+        id: 7,
+        subject: "Compatibilidad",
+        comment: "La aplicación no funciona correctamente en Firefox.",
+        description: "El código necesita ser revisado para garantizar que sea compatible con todos los navegadores modernos.",
+        userId: 107,
+        requirementId: 4
+    },
+    {
+        id: 8,
+        subject: "Funcionalidad",
+        comment: "La función de búsqueda no devuelve resultados relevantes.",
+        description: "Es necesario mejorar el algoritmo de búsqueda para que los resultados sean más precisos.",
+        userId: 108,
+        requirementId: 9
+    },
+    {
+        id: 9,
+        subject: "Rendimiento",
+        comment: "La animación de carga interfiere con la experiencia del usuario.",
+        description: "Se debe reducir la duración de la animación para que la experiencia de usuario sea más fluida.",
+        userId: 109,
+        requirementId: 6
+    },
+    {
+        id: 10,
+        subject: "Notificaciones",
+        comment: "Las notificaciones de error no son claras.",
+        description: "Las notificaciones deben ser más detalladas, indicando qué salió mal y cómo solucionarlo.",
+        userId: 110,
+        requirementId: 10
+    }
 ];

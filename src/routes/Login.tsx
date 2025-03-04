@@ -74,7 +74,6 @@ const ExternalLogin: React.FC = () => {
 
     const handleLogin = async () => {
         if (validateForm()) {
-            console.log("Iniciar sesión con:", formData);
 
             // PARA REGISTRARSE DESCOMENTAR ESTA LINEA
             // authService.signup(formData.email, formData.password);

@@ -4,6 +4,7 @@ import {
     Snackbar,
     Alert,
     SnackbarCloseReason,
+    Paper,
 } from "@mui/material";
 import UploadFileIcon from "@mui/icons-material/UploadFile";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -13,6 +14,7 @@ import { format } from 'date-fns';
 import { getTicketByID } from "../services/ticketService";
 import { getAllCategories } from "../services/categoryService";
 import { dummyCategories } from "../const/dummyData";
+import { CommentSection } from "./createTicket/CommentSection";
 
 interface TicketFormProps {
     onSubmit: (formData: {
@@ -46,8 +48,6 @@ export const DetailTicket: React.FC<TicketFormProps> = ({ onSubmit }) => {
 
     const [formData, setFormData] = React.useState<Ticket | undefined>();
     const [categories, setCategories] = React.useState<Category[]>([]);
-
-    const formatedId = idTicket?.toString().padStart(3, '0');
     let [searchParams] = useSearchParams();
     const editing = searchParams.get('editing')
     const initialIsEditing = editing === 'true';
@@ -139,202 +139,227 @@ export const DetailTicket: React.FC<TicketFormProps> = ({ onSubmit }) => {
     };
 
     return (
-        <Box component="form" onSubmit={handleSubmit} sx={{ p: 3, marginTop: 5, border: '1px solid #ccc', borderRadius: 2 }}>
+        <>
+            <Paper component="form" onSubmit={handleSubmit}
+                sx={{
+                    width: "auto",
+                    margin: "auto",
+                    mt: 5,
+                    p: 3,
+                    mb: 5,
+                    bgcolor: "background.main",
+                    borderRadius: 2,
+                }}>
 
-            <Snackbar open={open} autoHideDuration={6000} onClose={handleClose} anchorOrigin={{ vertical: 'top', horizontal: 'center' }} >
-                <Alert
-                    onClose={handleClose}
-                    severity="success"
-                    variant="filled"
-                    sx={{ width: '100%' }}
-                >
-                    Se realizaron correctamente los cambios
-                </Alert>
-            </Snackbar>
+                <Snackbar open={open} autoHideDuration={6000} onClose={handleClose} anchorOrigin={{ vertical: 'top', horizontal: 'center' }} >
+                    <Alert
+                        onClose={handleClose}
+                        severity="success"
+                        variant="filled"
+                        sx={{ width: '100%' }}
+                    >
+                        Se realizaron correctamente los cambios
+                    </Alert>
+                </Snackbar>
 
-            <Typography variant="h6" gutterBottom>
-                Ticket #C{formatedId}
-            </Typography>
+                <Typography variant="h5" sx={{ mb: 3, fontWeight: "bold" }} gutterBottom>
+                    Ticket {idTicket}
+                </Typography>
 
-            {!formData
-                ? (<div><p>Loading</p></div>)
-                :
-                <Grid container spacing={2}>
-                    <Grid item xs={12}>
-                        <TextField
-                            label="Asunto"
-                            name="subject"
-                            value={formData.subject}
-                            onChange={handleChange}
-                            fullWidth
-                            disabled={!isEditing}
-                        />
-                    </Grid>
-                    <Grid item xs={12} sx={{ borderColor: "primary.contrastText" }}>
-                        <TextField
-                            sx={{ borderColor: "primary.contrastText" }}
-                            label="Descripción"
-                            name="description"
-                            value={formData.description}
-                            onChange={handleChange}
-                            fullWidth
-                            multiline
-                            rows={4}
-                            disabled={!isEditing}
-                        />
-                    </Grid>
-                    <Grid item xs={12}>
-                        <TextField
-                            label="Usuario destinatario"
-                            name="recipient"
-                            value={formData.recipient}
-                            onChange={handleChange}
-                            fullWidth
-                            disabled={!isEditing}
-                        />
-                    </Grid>
-                    <Grid item xs={12}>
-                        <TextField
-                            label="Relacionados"
-                            name="related"
-                            value={formData.related}
-                            onChange={handleChange}
-                            fullWidth
-                            disabled={!isEditing}
-                        />
-                    </Grid>
-                    <Grid item xs={12} sm={6}>
-                        <FormControl fullWidth disabled={!isEditing}>
-                            <InputLabel>Categoría</InputLabel>
-                            <Select
-                                name="category"
-                                value={formData.category.description}
-                                label="Categoria"
+                {!formData
+                    ? (<div><p>Loading</p></div>)
+                    :
+                    <Grid container spacing={2}>
+                        <Grid item xs={12}>
+                            <TextField
+                                label="Asunto"
+                                name="subject"
+                                value={formData.subject}
                                 onChange={handleChange}
-                            >
-                                <MenuItem value={formData.category.description}>{formData.category.description}</MenuItem>
-
-                                {(categories.length > 0) && (
-                                    categories.map((category) => {
-                                        if (category.id != formData.category.id) {
-                                            return (
-                                                <MenuItem key={category.id} value={category}>{category.description}</MenuItem>
-                                            )
-                                        }
-                                    }))}
-
-                            </Select>
-                        </FormControl>
-                    </Grid>
-                    <Grid item xs={12} sm={6}>
-                        <FormControl fullWidth disabled={!isEditing}>
-                            <InputLabel>Prioridad</InputLabel>
-                            <Select
-                                name="priority"
-                                value={Object.keys(matchPriority).find(key => matchPriority[key] === formData.priority)}
-                                onChange={handleChange}
-                            >
-                                <MenuItem value="Baja">Urgente</MenuItem>
-                                <MenuItem value="Alta">Alta</MenuItem>
-                                <MenuItem value="Media">Media</MenuItem>
-                                <MenuItem value="Baja">Baja</MenuItem>
-
-                            </Select>
-                        </FormControl>
-                    </Grid>
-                    <Grid item xs={12} sm={6}>
-                        <TextField
-                            label="Fecha"
-                            name="date"
-                            type="date"
-                            value={formData.date}
-                            onChange={handleChange}
-                            fullWidth
-                            InputLabelProps={{ shrink: true }}
-                            disabled={!isEditing}
-                        />
-                    </Grid>
-                    <Grid item xs={12} sm={6}>
-                        <TextField
-                            label="Hora"
-                            name="time"
-                            type="time"
-                            value={formData.time}
-                            onChange={handleChange}
-                            fullWidth
-                            InputLabelProps={{ shrink: true }}
-                            disabled={!isEditing}
-                        />
-                    </Grid>
-                    <Grid item xs={12} sm={6}>
-                        <FormControl fullWidth disabled={!isEditing}>
-                            <InputLabel>Estado</InputLabel>
-                            <Select
-                                name="status"
-                                label="Estado"
-                                value={matchState[formData.state]}
-                                onChange={handleChange}
-                            >
-                                <MenuItem value="Abierto">Abierto</MenuItem>
-                                <MenuItem value="Asignado">Asignado</MenuItem>
-                                <MenuItem value="Cerrado">Cerrado</MenuItem>
-                            </Select>
-                        </FormControl>
-                    </Grid>
-                    <Grid item xs={12}>
-                        <TextField
-                            label="Comentario"
-                            name="comment"
-                            value={formData.comment}
-                            onChange={handleChange}
-                            fullWidth
-                            multiline
-                            rows={2}
-                            disabled={!isEditing}
-                        />
-                    </Grid>
-                    <Grid item xs={12}>
-                        <Button
-                            variant="contained"
-                            component="label"
-                            startIcon={<UploadFileIcon />}
-                            disabled={!isEditing}
-                        >
-                            Subir archivos
-                            <input
-                                type="file"
-                                multiple
-                                hidden
-                                onChange={handleFileChange}
+                                fullWidth
+                                disabled={!isEditing}
                             />
-                        </Button>
-                        <List>
-                            {formData.files.map((file, index) => (
-                                <ListItem
-                                    key={index}
-                                    secondaryAction={
-                                        <IconButton edge="end" aria-label="delete" onClick={() => handleDeleteFile(index)} disabled={!isEditing}>
-                                            <DeleteIcon />
-                                        </IconButton>
-                                    }
+                        </Grid>
+                        <Grid item xs={12} sx={{ borderColor: "primary.contrastText" }}>
+                            <TextField
+                                sx={{ borderColor: "primary.contrastText" }}
+                                label="Descripción"
+                                name="description"
+                                value={formData.description}
+                                onChange={handleChange}
+                                fullWidth
+                                multiline
+                                rows={4}
+                                disabled={!isEditing}
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <TextField
+                                label="Usuario destinatario"
+                                name="recipient"
+                                value={formData.recipient}
+                                onChange={handleChange}
+                                fullWidth
+                                disabled={!isEditing}
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <TextField
+                                label="Relacionados"
+                                name="related"
+                                value={formData.related}
+                                onChange={handleChange}
+                                fullWidth
+                                disabled={!isEditing}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <FormControl fullWidth disabled={!isEditing}>
+                                <InputLabel>Categoría</InputLabel>
+                                <Select
+                                    name="category"
+                                    value={formData.category.description}
+                                    label="Categoria"
+                                    onChange={handleChange}
                                 >
-                                    <ListItemText primary={file.name} />
-                                </ListItem>
-                            ))}
-                        </List>
-                    </Grid>
-                    <Grid item xs={12} sm={4}>
-                        <Button variant="outlined" fullWidth onClick={handleCancel} disabled={!isEditing}>Cancelar</Button>
-                    </Grid>
-                    <Grid item xs={12} sm={4}>
-                        <Button type="submit" variant="contained" fullWidth disabled={!isEditing} onClick={handleConfirm}>Confirmar</Button>
-                    </Grid>
-                    <Grid item xs={12} sm={4}>
-                        <Button variant="contained" color="success" fullWidth onClick={handleEdit} disabled={isEditing}>Editar</Button>
-                    </Grid>
-                </Grid>
-            }
+                                    <MenuItem value={formData.category.description}>{formData.category.description}</MenuItem>
 
-        </Box >
+                                    {(categories.length > 0) && (
+                                        categories.map((category) => {
+                                            if (category.id != formData.category.id) {
+                                                return (
+                                                    <MenuItem key={category.id} value={category}>{category.description}</MenuItem>
+                                                )
+                                            }
+                                        }))}
+
+                                </Select>
+                            </FormControl>
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <FormControl fullWidth disabled={!isEditing}>
+                                <InputLabel>Prioridad</InputLabel>
+                                <Select
+                                    name="priority"
+                                    value={Object.keys(matchPriority).find(key => matchPriority[key] === formData.priority)}
+                                    onChange={handleChange}
+                                >
+                                    <MenuItem value="Baja">Urgente</MenuItem>
+                                    <MenuItem value="Alta">Alta</MenuItem>
+                                    <MenuItem value="Media">Media</MenuItem>
+                                    <MenuItem value="Baja">Baja</MenuItem>
+
+                                </Select>
+                            </FormControl>
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <TextField
+                                label="Fecha"
+                                name="date"
+                                type="date"
+                                value={formData.date}
+                                onChange={handleChange}
+                                fullWidth
+                                InputLabelProps={{ shrink: true }}
+                                disabled={!isEditing}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <TextField
+                                label="Hora"
+                                name="time"
+                                type="time"
+                                value={formData.time}
+                                onChange={handleChange}
+                                fullWidth
+                                InputLabelProps={{ shrink: true }}
+                                disabled={!isEditing}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <FormControl fullWidth disabled={!isEditing}>
+                                <InputLabel>Estado</InputLabel>
+                                <Select
+                                    name="status"
+                                    label="Estado"
+                                    value={matchState[formData.state]}
+                                    onChange={handleChange}
+                                >
+                                    <MenuItem value="Abierto">Abierto</MenuItem>
+                                    <MenuItem value="Asignado">Asignado</MenuItem>
+                                    <MenuItem value="Cerrado">Cerrado</MenuItem>
+                                </Select>
+                            </FormControl>
+                        </Grid>
+                        <Grid item xs={12}>
+                            <TextField
+                                label="Comentario"
+                                name="comment"
+                                value={formData.comment}
+                                onChange={handleChange}
+                                fullWidth
+                                multiline
+                                rows={2}
+                                disabled={!isEditing}
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <Button
+                                variant="contained"
+                                component="label"
+                                startIcon={<UploadFileIcon />}
+                                disabled={!isEditing}
+                            >
+                                Subir archivos
+                                <input
+                                    type="file"
+                                    multiple
+                                    hidden
+                                    onChange={handleFileChange}
+                                />
+                            </Button>
+                            <List>
+                                {formData.files.map((file, index) => (
+                                    <ListItem
+                                        key={index}
+                                        secondaryAction={
+                                            <IconButton edge="end" aria-label="delete" onClick={() => handleDeleteFile(index)} disabled={!isEditing}>
+                                                <DeleteIcon />
+                                            </IconButton>
+                                        }
+                                    >
+                                        <ListItemText primary={file.name} />
+                                    </ListItem>
+                                ))}
+                            </List>
+                        </Grid>
+                        <Grid item xs={12} sm={4}>
+                            <Button variant="outlined" fullWidth onClick={handleCancel} disabled={!isEditing}>Cancelar</Button>
+                        </Grid>
+                        <Grid item xs={12} sm={4}>
+                            <Button type="submit" variant="contained" fullWidth disabled={!isEditing} onClick={handleConfirm}>Confirmar</Button>
+                        </Grid>
+                        <Grid item xs={12} sm={4}>
+                            <Button variant="contained" color="success" fullWidth onClick={handleEdit} disabled={isEditing}>Editar</Button>
+                        </Grid>
+                    </Grid>
+                }
+            </Paper >
+
+            <Paper
+                sx={{
+                    width: "auto",
+                    margin: "auto",
+                    mt: 5,
+                    p: 3,
+                    mb: 5,
+                    bgcolor: "background.main",
+                    borderRadius: 2,
+                }}
+            >
+                <CommentSection ticketId={ticket.id} ticketState={ticket.state} />
+            </Paper>
+
+        </>
     );
 };
