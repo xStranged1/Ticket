@@ -1,3 +1,4 @@
+import { User } from "../types/types";
 import { axiosClient } from "./apiService";
 
 export const getUserById = async (id: number) => {
@@ -23,3 +24,16 @@ export const getAllUsers = async () => {
         return false
     }
 }
+
+export const patchUser = async (id: number, updatedFields: User) => {
+    try {
+        const response = await axiosClient.put(`/user-sv/api/v1/outside-users/${id}`, updatedFields);
+        if (response.status === 200) {
+            return true;
+        }
+        return false;
+    } catch (error) {
+        console.error('Error actualizando el ticket:', error);
+        return false;
+    }
+};

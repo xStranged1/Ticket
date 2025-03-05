@@ -1,5 +1,5 @@
 import { API_URL } from "../const/config";
-import { PriorityDB, Ticket } from "../types/types";
+import { PriorityDB, Ticket, User } from "../types/types";
 import { axiosClient } from "./apiService";
 import Cookies from 'js-cookie';
 
@@ -72,23 +72,9 @@ export const deleteTicket = async (id: number) => {
     }
 }
 
-export interface UpdateTicket {
-    subject: string
-    description: string
-    priority: PriorityDB
-    requirements: number[]
-}
-
-export const patchTicket = async (id: number, updatedFields: UpdateTicket) => {
+export const patchTicket = async (id: number, updatedFields: User) => {
     try {
-        const token = Cookies.get('accessToken');
-        const response = await axiosClient.patch(`/requirement-sv/api/requirements/${id}`, updatedFields, {
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            }
-        });
-
+        const response = await axiosClient.patch(`/requirement-sv/api/requirements/${id}`, updatedFields);
         if (response.status === 200 || response.status === 204) {
             return true;
         }

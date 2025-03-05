@@ -13,7 +13,7 @@ import {
 } from "@mui/material";
 import StarIcon from "@mui/icons-material/Star";
 import { useNavigate, useParams } from "react-router-dom";
-import { getUserById } from "../services/userService";
+import { getUserById, patchUser } from "../services/userService";
 import { User } from "../types/types";
 
 const UserProfile: React.FC = () => {
@@ -59,7 +59,18 @@ const UserProfile: React.FC = () => {
         setProfile((prevProfile: any) => ({ ...prevProfile, email: value }));
     };
 
-    const toggleEditMode = () => {
+    const toggleEditMode = async () => {
+        if (isEditing) {
+            if (!profile) return
+            console.log("profile enviado");
+            console.log(profile);
+            const res = await patchUser(id, profile)
+            if (!res) {
+                console.log('error');
+                return
+            }
+            setOpenToastModify(true)
+        }
         setIsEditing((prev) => !prev);
     };
 
@@ -211,7 +222,6 @@ const UserProfile: React.FC = () => {
                                     style={{ width: 150 }}
                                     color={isEditing ? "success" : "primary"}
                                     onClick={toggleEditMode}
-
                                 >
                                     {isEditing ? "Guardar" : "Editar"}
                                 </Button>
