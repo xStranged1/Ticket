@@ -71,3 +71,23 @@ export const deleteTicket = async (id: number) => {
         return false
     }
 }
+
+export const patchTicket = async (id: number, updatedFields: Partial<Ticket>) => {
+    try {
+        const token = Cookies.get('accessToken');
+        const response = await axiosClient.patch(`/requirement-sv/api/requirements/${id}`, updatedFields, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (response.status === 200 || response.status === 204) {
+            return true;
+        }
+        return false;
+    } catch (error) {
+        console.error('Error actualizando el ticket:', error);
+        return false;
+    }
+};

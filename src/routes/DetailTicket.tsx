@@ -15,6 +15,7 @@ import { getTicketByID } from "../services/ticketService";
 import { getAllCategories } from "../services/categoryService";
 import { dummyCategories } from "../const/dummyData";
 import { CommentSection } from "../components/CommentSection";
+import { patchTicket } from "../services/ticketService";
 
 interface TicketFormProps {
     onSubmit: (formData: {
@@ -121,12 +122,33 @@ export const DetailTicket: React.FC<TicketFormProps> = ({ onSubmit }) => {
         setIsEditing(false);
     };
 
-    const handleConfirm = () => {
-        setOpen(true);
-        setTimeout(() => {
-            navigate('/tickets')
-        }, 1600);
-    }
+    const handleConfirm = async () => {
+        if (!formData) return;
+    
+        const updatedData = {
+            subject: formData.subject,
+            description: formData.description,
+            recipient: formData.recipient,
+            related: formData.related,
+            category: formData.category.description, // Ajusta según lo que necesite el backend
+            priority: Object.keys(matchPriority).find(key => matchPriority[key] === formData.priority),
+            date: formData.date,
+            time: formData.time,
+            state: Object.keys(matchState).find(key => matchState[key] === formData.state),
+            comment: formData.comment,
+        };
+
+        const success = await patchTicket(idTicket, updatedData);
+        if (success) {
+            setOpen(true);
+            setIsEditing(false);
+            setTimeout(() => {
+                navigate('/tickets');
+            }, 1600);
+        } else {
+            console.error("Error al actualizar el ticket");
+        }
+    };
 
     const handleClose = (
         event?: React.SyntheticEvent | Event,
@@ -140,7 +162,9 @@ export const DetailTicket: React.FC<TicketFormProps> = ({ onSubmit }) => {
 
     return (
         <>
-            <Paper component="form" onSubmit={handleSubmit}
+            <Paper 
+                component="form" 
+                onSubmit={handleSubmit}
                 sx={{
                     width: "auto",
                     margin: "auto",
@@ -149,9 +173,15 @@ export const DetailTicket: React.FC<TicketFormProps> = ({ onSubmit }) => {
                     mb: 5,
                     bgcolor: "background.main",
                     borderRadius: 2,
-                }}>
-
-                <Snackbar open={open} autoHideDuration={6000} onClose={handleClose} anchorOrigin={{ vertical: 'top', horizontal: 'center' }} >
+                }}
+            >
+                {/* Notificación Snackbar */}
+                <Snackbar 
+                    open={open} 
+                    autoHideDuration={6000} 
+                    onClose={handleClose} 
+                    anchorOrigin={{ vertical: 'top', horizontal: 'center' }} 
+                >
                     <Alert
                         onClose={handleClose}
                         severity="success"
@@ -161,31 +191,34 @@ export const DetailTicket: React.FC<TicketFormProps> = ({ onSubmit }) => {
                         Se realizaron correctamente los cambios
                     </Alert>
                 </Snackbar>
-
+    
+                {/* Código del ticket */}
                 <Typography variant="h5" sx={{ mb: 3, fontWeight: "bold" }} gutterBottom>
-                    {formData?.code}
+                    {formData?.code || "Cargando..."}
                 </Typography>
-
-                {!formData
-                    ? (<div><p>Loading</p></div>)
-                    :
+    
+                {!formData ? (
+                    <p>Loading...</p>
+                ) : (
                     <Grid container spacing={2}>
+                        {/* Asunto */}
                         <Grid item xs={12}>
                             <TextField
                                 label="Asunto"
                                 name="subject"
-                                value={formData.subject}
+                                value={formData?.subject || ""}
                                 onChange={handleChange}
                                 fullWidth
                                 disabled={!isEditing}
                             />
                         </Grid>
-                        <Grid item xs={12} sx={{ borderColor: "primary.contrastText" }}>
+    
+                        {/* Descripción */}
+                        <Grid item xs={12}>
                             <TextField
-                                sx={{ borderColor: "primary.contrastText" }}
                                 label="Descripción"
                                 name="description"
-                                value={formData.description}
+                                value={formData?.description || ""}
                                 onChange={handleChange}
                                 fullWidth
                                 multiline
@@ -193,96 +226,106 @@ export const DetailTicket: React.FC<TicketFormProps> = ({ onSubmit }) => {
                                 disabled={!isEditing}
                             />
                         </Grid>
+    
+                        {/* Usuario destinatario */}
                         <Grid item xs={12}>
                             <TextField
                                 label="Usuario destinatario"
                                 name="recipient"
-                                value={formData.recipient}
+                                value={formData?.recipient || ""}
                                 onChange={handleChange}
                                 fullWidth
                                 disabled={!isEditing}
                             />
                         </Grid>
+    
+                        {/* Relacionados */}
                         <Grid item xs={12}>
                             <TextField
                                 label="Relacionados"
                                 name="related"
-                                value={formData.related}
+                                value={formData?.related || ""}
                                 onChange={handleChange}
                                 fullWidth
                                 disabled={!isEditing}
                             />
                         </Grid>
+    
+                        {/* Categoría */}
                         <Grid item xs={12} sm={6}>
                             <FormControl fullWidth disabled={!isEditing}>
                                 <InputLabel>Categoría</InputLabel>
                                 <Select
                                     name="category"
-                                    value={formData.category.description}
-                                    label="Categoria"
+                                    value={formData?.category?.description || ""}
                                     onChange={handleChange}
                                 >
-                                    <MenuItem value={formData.category.description}>{formData.category.description}</MenuItem>
-
-                                    {(categories.length > 0) && (
-                                        categories.map((category) => {
-                                            if (category.id != formData.category.id) {
-                                                return (
-                                                    <MenuItem key={category.id} value={category}>{category.description}</MenuItem>
-                                                )
-                                            }
-                                        }))}
-
+                                    <MenuItem value={formData?.category?.description || ""}>
+                                        {formData?.category?.description || "Seleccionar"}
+                                    </MenuItem>
+                                    {categories.length > 0 && categories.map((category) => (
+                                        category.id !== formData?.category?.id && (
+                                            <MenuItem key={category.id} value={category.description}>
+                                                {category.description}
+                                            </MenuItem>
+                                        )
+                                    ))}
                                 </Select>
                             </FormControl>
                         </Grid>
+    
+                        {/* Prioridad */}
                         <Grid item xs={12} sm={6}>
                             <FormControl fullWidth disabled={!isEditing}>
                                 <InputLabel>Prioridad</InputLabel>
                                 <Select
                                     name="priority"
-                                    value={Object.keys(matchPriority).find(key => matchPriority[key] === formData.priority)}
+                                    value={Object.keys(matchPriority).find(key => matchPriority[key] === formData?.priority) || ""}
                                     onChange={handleChange}
                                 >
-                                    <MenuItem value="Baja">Urgente</MenuItem>
+                                    <MenuItem value="Urgente">Urgente</MenuItem>
                                     <MenuItem value="Alta">Alta</MenuItem>
                                     <MenuItem value="Media">Media</MenuItem>
                                     <MenuItem value="Baja">Baja</MenuItem>
-
                                 </Select>
                             </FormControl>
                         </Grid>
+    
+                        {/* Fecha */}
                         <Grid item xs={12} sm={6}>
                             <TextField
                                 label="Fecha"
                                 name="date"
                                 type="date"
-                                value={formData.date}
+                                value={formData?.date || ""}
                                 onChange={handleChange}
                                 fullWidth
                                 InputLabelProps={{ shrink: true }}
                                 disabled={!isEditing}
                             />
                         </Grid>
+    
+                        {/* Hora */}
                         <Grid item xs={12} sm={6}>
                             <TextField
                                 label="Hora"
                                 name="time"
                                 type="time"
-                                value={formData.time}
+                                value={formData?.time || ""}
                                 onChange={handleChange}
                                 fullWidth
                                 InputLabelProps={{ shrink: true }}
                                 disabled={!isEditing}
                             />
                         </Grid>
+    
+                        {/* Estado */}
                         <Grid item xs={12} sm={6}>
                             <FormControl fullWidth disabled={!isEditing}>
                                 <InputLabel>Estado</InputLabel>
                                 <Select
                                     name="status"
-                                    label="Estado"
-                                    value={matchState[formData.state]}
+                                    value={matchState[formData?.state] || ""}
                                     onChange={handleChange}
                                 >
                                     <MenuItem value="Abierto">Abierto</MenuItem>
@@ -291,11 +334,13 @@ export const DetailTicket: React.FC<TicketFormProps> = ({ onSubmit }) => {
                                 </Select>
                             </FormControl>
                         </Grid>
+    
+                        {/* Comentario */}
                         <Grid item xs={12}>
                             <TextField
                                 label="Comentario"
                                 name="comment"
-                                value={formData.comment}
+                                value={formData?.comment || ""}
                                 onChange={handleChange}
                                 fullWidth
                                 multiline
@@ -303,6 +348,8 @@ export const DetailTicket: React.FC<TicketFormProps> = ({ onSubmit }) => {
                                 disabled={!isEditing}
                             />
                         </Grid>
+    
+                        {/* Archivos Adjuntos */}
                         <Grid item xs={12}>
                             <Button
                                 variant="contained"
@@ -319,7 +366,7 @@ export const DetailTicket: React.FC<TicketFormProps> = ({ onSubmit }) => {
                                 />
                             </Button>
                             <List>
-                                {formData.files.map((file, index) => (
+                                {(formData?.files || []).map((file, index) => (
                                     <ListItem
                                         key={index}
                                         secondaryAction={
@@ -333,6 +380,8 @@ export const DetailTicket: React.FC<TicketFormProps> = ({ onSubmit }) => {
                                 ))}
                             </List>
                         </Grid>
+    
+                        {/* Botones */}
                         <Grid item xs={12} sm={3}>
                             <Button variant="contained" color="error" fullWidth onClick={() => navigate(`/tickets`)}>Volver</Button>
                         </Grid>
@@ -346,9 +395,10 @@ export const DetailTicket: React.FC<TicketFormProps> = ({ onSubmit }) => {
                             <Button variant="contained" color="success" fullWidth onClick={handleEdit} disabled={isEditing}>Editar</Button>
                         </Grid>
                     </Grid>
-                }
-            </Paper >
-
+                )}
+            </Paper>
+    
+            {/* Comentarios */}
             <Paper
                 sx={{
                     width: "auto",
@@ -360,9 +410,8 @@ export const DetailTicket: React.FC<TicketFormProps> = ({ onSubmit }) => {
                     borderRadius: 2,
                 }}
             >
-                {!formData ? <p>cargando comentarios...</p> : <CommentSection ticketId={idTicket} ticketState={formData.state} />}
+                {!formData ? <p>Cargando comentarios...</p> : <CommentSection ticketId={idTicket} ticketState={formData.state} />}
             </Paper>
-
         </>
     );
-};
+    
