@@ -237,10 +237,11 @@ export default function Tickets() {
     );
 
     const priorityValue: Record<PriorityDB, number> = {
-        'URGENT': 4,
-        'HIGH': 3,
-        'MEDIUM': 2,
-        'LOW': 1,
+        'URGENT': 5,
+        'HIGH': 4,
+        'MEDIUM': 3,
+        'LOW': 2,
+        'SUPER_LOW': 1
     };
 
     const sortedRows = useMemo(
@@ -401,6 +402,7 @@ export default function Tickets() {
                                             {row.priority == 'HIGH' && (<Chip style={{ backgroundColor: "#ff5f38", color: "#fff" }} variant='filled' label={textPriority} />)}
                                             {row.priority == 'MEDIUM' && (<Chip color='warning' style={{ color: "#fff" }} variant='filled' label={textPriority} />)}
                                             {row.priority == 'LOW' && (<Chip color='primary' style={{ color: "#fff" }} variant='filled' label={textPriority} />)}
+                                            {row.priority == 'SUPER_LOW' && (<Chip color='primary' style={{ color: "#fff" }} variant='filled' label={textPriority} />)}
 
                                         </TableCell>
                                         <TableCell align="right"

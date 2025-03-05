@@ -1,14 +1,15 @@
 
-export type Priority = 'Muy alta' | 'Alta' | 'Media' | 'Baja'
+export type Priority = 'Muy alta' | 'Alta' | 'Media' | 'Baja' | 'Muy baja'
 
 // ESTE TIPO ES IGUAL AL DTO DEL BACK
-export type PriorityDB = 'URGENT' | 'HIGH' | 'MEDIUM' | 'LOW'
+export type PriorityDB = 'URGENT' | 'HIGH' | 'MEDIUM' | 'LOW' | 'SUPER_LOW'
 
 export const matchPriority = {
     'Muy alta': 'URGENT',
     'Alta': 'HIGH',
     'Media': 'MEDIUM',
-    'Baja': 'LOW'
+    'Baja': 'LOW',
+    'Muy baja': 'SUPER_LOW'
 }
 
 export const matchState = {
