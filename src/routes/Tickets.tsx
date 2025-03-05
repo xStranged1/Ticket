@@ -147,7 +147,7 @@ function EnhancedTableToolbar() {
                     variant="h6"
                     id="tableTitle"
                 >
-                    Romeo kai
+                    Administrador
                 </Typography>
             </a>
 

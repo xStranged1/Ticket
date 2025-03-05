@@ -49,6 +49,9 @@ export const DetailTicket: React.FC<TicketFormProps> = ({ onSubmit }) => {
     const [open, setOpen] = useState(false);
 
     const [formData, setFormData] = React.useState<Ticket | undefined>();
+    const [inputTime, setInputTime] = React.useState();
+
+
     const [categories, setCategories] = React.useState<Category[]>([]);
     let [searchParams] = useSearchParams();
     const editing = searchParams.get('editing')
@@ -290,7 +293,7 @@ export const DetailTicket: React.FC<TicketFormProps> = ({ onSubmit }) => {
                                 label="Fecha"
                                 name="date"
                                 type="date"
-                                value={formData?.date || ""}
+                                value={formData?.createdAt || ""}
                                 onChange={handleChange}
                                 fullWidth
                                 InputLabelProps={{ shrink: true }}
@@ -304,8 +307,13 @@ export const DetailTicket: React.FC<TicketFormProps> = ({ onSubmit }) => {
                                 label="Hora"
                                 name="time"
                                 type="time"
-                                value={formData?.time || ""}
-                                onChange={handleChange}
+                                value={formData?.createdTime.slice(0, -4) || ""}
+                                onChange={(e) => {
+                                    setFormData({
+                                        ...formData,
+                                        time: e.target.value,
+                                    });
+                                }}
                                 fullWidth
                                 InputLabelProps={{ shrink: true }}
                                 disabled={!isEditing}
@@ -329,7 +337,7 @@ export const DetailTicket: React.FC<TicketFormProps> = ({ onSubmit }) => {
                         </Grid>
 
                         {/* Archivos Adjuntos */}
-                        <Grid item xs={12}>
+                        <Grid item xs={12} style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
                             <Button
                                 variant="contained"
                                 component="label"
@@ -356,16 +364,17 @@ export const DetailTicket: React.FC<TicketFormProps> = ({ onSubmit }) => {
                                                     <InputFileUpload handleUploadFile={downloadFiles} text="Descargar" download />
                                                 </IconButton>
                                             </div>
-                                            <ListItem
-                                                key={index}
-                                                secondaryAction={
-                                                    <IconButton edge="end" aria-label="delete" onClick={() => handleDeleteFile(index)} disabled={!isEditing}>
-                                                        <DeleteIcon />
-                                                    </IconButton>
-                                                }
-                                            >
-                                                <ListItemText primary={file.name} />
-                                            </ListItem>
+                                            <div>
+                                                <ListItem
+                                                    key={index}
+                                                    secondaryAction={
+                                                        <IconButton edge="end" aria-label="delete" onClick={() => handleDeleteFile(index)} disabled={!isEditing}>
+                                                        </IconButton>
+                                                    }
+                                                >
+                                                    <ListItemText primary={file.name} />
+                                                </ListItem>
+                                            </div>
                                         </div>
                                     )
                                 }
@@ -388,10 +397,10 @@ export const DetailTicket: React.FC<TicketFormProps> = ({ onSubmit }) => {
                         </Grid>
                     </Grid>
                 )}
-            </Paper>
+            </Paper >
 
             {/* Comentarios */}
-            <Paper
+            < Paper
                 sx={{
                     width: "auto",
                     margin: "auto",
@@ -400,10 +409,11 @@ export const DetailTicket: React.FC<TicketFormProps> = ({ onSubmit }) => {
                     mb: 5,
                     bgcolor: "background.main",
                     borderRadius: 2,
-                }}
+                }
+                }
             >
                 {!formData ? <p>Cargando comentarios...</p> : <CommentSection ticketId={idTicket} ticketState={formData.state} />}
-            </Paper>
+            </Paper >
         </>
     );
 }

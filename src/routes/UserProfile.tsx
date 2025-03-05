@@ -165,8 +165,6 @@ const UserProfile: React.FC = () => {
                             >
                                 Departamento: {profile?.company}
                                 <br />
-                                Cargo: {profile?.position ?? "Desarrollador"}
-                                <br />
                                 Cuil: {profile?.cuil}
                             </Typography>
                         </Box>
@@ -189,7 +187,7 @@ const UserProfile: React.FC = () => {
                                 label="Cargo"
                                 variant="outlined"
                                 fullWidth
-                                value={profile?.position || ""}
+                                value={profile?.position || "Desarrollador"}
                                 onChange={handlePositionChange}
                                 disabled={!isEditing}
                                 sx={{ mb: 2 }}

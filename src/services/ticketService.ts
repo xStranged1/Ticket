@@ -87,6 +87,7 @@ export const patchTicket = async (id: number, updatedFields: User) => {
 
 export const downloadFiles = async (fileName: string) => {
 
+
     try {
         const response = await axiosClient.get(`/requirement-sv/api/requirements/files?fileName=${fileName}`);
         if (response.status == 200) return response.data;
