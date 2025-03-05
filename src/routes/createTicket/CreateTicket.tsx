@@ -100,6 +100,7 @@ export default function CreateTicket() {
             priority: matchPriority[prioridad] as PriorityDB,
             categoryId: selectedCategory.id,
             typeId: selectedCategory.type.id,
+            assigneeId: selectedUser?.id,
             creatorId: 1,
         };
 

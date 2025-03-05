@@ -13,7 +13,7 @@ import Paper from '@mui/material/Paper';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import { visuallyHidden } from '@mui/utils';
-import { Alert, Button, Dialog, DialogActions, DialogContent, DialogTitle, Snackbar, TextField } from '@mui/material';
+import { Alert, Button, Chip, Dialog, DialogActions, DialogContent, DialogTitle, Snackbar, TextField } from '@mui/material';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
@@ -367,6 +367,7 @@ export default function Tickets() {
                             {paginatedRows.map((row, index) => {
                                 const isItemSelected = selected.indexOf(row.id) !== -1;
                                 const labelId = `enhanced-table-checkbox-${index}`;
+                                const textPriority = Object.keys(matchPriority).find(key => matchPriority[key] === row.priority)
                                 return (
                                     <TableRow
                                         style={{ cursor: 'pointer' }}
@@ -396,7 +397,11 @@ export default function Tickets() {
                                         <TableCell align="right"
                                             sx={{ display: { xs: "none", sm: "table-cell" } }}
                                         >
-                                            {Object.keys(matchPriority).find(key => matchPriority[key] === row.priority)}
+                                            {row.priority == 'URGENT' && (<Chip color='error' style={{ color: "#fff" }} variant='filled' label={textPriority} />)}
+                                            {row.priority == 'HIGH' && (<Chip style={{ backgroundColor: "#ff5f38", color: "#fff" }} variant='filled' label={textPriority} />)}
+                                            {row.priority == 'MEDIUM' && (<Chip color='warning' style={{ color: "#fff" }} variant='filled' label={textPriority} />)}
+                                            {row.priority == 'LOW' && (<Chip color='primary' style={{ color: "#fff" }} variant='filled' label={textPriority} />)}
+
                                         </TableCell>
                                         <TableCell align="right"
                                             sx={{ display: { xs: "none", sm: "table-cell" } }}
