@@ -6,6 +6,8 @@ import { getAllCategories } from "../../services/categoryService";
 import { ChangeEvent, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { dummyCategories } from "../../const/dummyData";
+import voidPdf from '../../assets/void.pdf';
+import InputFileUpload from "../../components/InputFileUpload";
 
 export default function CreateTicket() {
     const [categories, setCategories] = useState<Category[]>([]);
@@ -15,7 +17,7 @@ export default function CreateTicket() {
     const [description, setDescription] = useState("");
     const [open, setOpen] = useState(false);
     const [openToastError, setOpenToastError] = useState(false);
-    const [file, setFile] = useState<File | null>(null);
+    const [files, setFiles] = useState<FileList>();
 
     const navigate = useNavigate();
 
@@ -29,7 +31,7 @@ export default function CreateTicket() {
 
     const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
         if (event.target.files && event.target.files.length > 0) {
-            setFile(event.target.files[0]);
+            setFiles(event.target.files);
         }
     };
 
@@ -85,9 +87,17 @@ export default function CreateTicket() {
         const formData = new FormData();
         formData.append("requirement", new Blob([JSON.stringify(newTicket)], { type: "application/json" }));
 
-        if (file) {
-            formData.append('files', file);
+        if (files) {
+            if (files.length > 0) {
+                Array.from(files).forEach((file) => {
+                    formData.append('files', file);
+                });
+            }
+        } else {
+            const voidFile = new File([voidPdf], 'void.pdf', { type: 'application/pdf' });
+            formData.append('files', voidFile);
         }
+
         try {
             const res = await createTicket(formData);
             if (!res) {
@@ -186,10 +196,9 @@ export default function CreateTicket() {
                     </Grid>
                     <Grid item xs={12}>
                         <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", border: "1px dashed gray", p: 2, borderRadius: 2 }}>
-                            <Typography>Archivos adjuntos: {file ? file.name : "Ninguno"}</Typography>
+                            <Typography>Archivos adjuntos: {files?.length}</Typography>
                             <IconButton color="primary" component="label">
-                                <UploadFileIcon />
-                                <input type="file" hidden onChange={handleFileChange} />
+                                <InputFileUpload handleUploadFile={handleFileChange} />
                             </IconButton>
                         </Box>
                     </Grid>

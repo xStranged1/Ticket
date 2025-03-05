@@ -99,8 +99,8 @@ export const CommentSection = ({ ticketState, ticketId }: ParamsCommentSection) 
                         >
                             Enviar
                         </Button>
-                        <SendIcon fontSize="medium" color="secondary" />
-                        <input type="file" onChange={handleFileChange} />
+                        <div style={{ paddingInline: 15 }}><SendIcon fontSize="large" color="secondary" /></div>
+                        <input type="file" hidden onChange={handleFileChange} />
                     </div>
 
                 </div>

@@ -1,12 +1,10 @@
-import { dummyComments } from "../const/dummyData";
 import { Comment } from "../types/types";
 import { axiosClient } from "./apiService";
 
 export const getCommentsByTicketId = async (id: number): Promise<Comment[] | false | 400> => {
 
-    return dummyComments
     try {
-        const response = await axiosClient.get(`/comment-sv/api/comments/${id}`);
+        const response = await axiosClient.get(`/comment-sv/api/comments/requirement/${id}`);
         if (response.status == 200) return response.data;
         if (response.status == 400) return 400 // ticket not found
         return false

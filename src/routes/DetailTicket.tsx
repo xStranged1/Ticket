@@ -163,7 +163,7 @@ export const DetailTicket: React.FC<TicketFormProps> = ({ onSubmit }) => {
                 </Snackbar>
 
                 <Typography variant="h5" sx={{ mb: 3, fontWeight: "bold" }} gutterBottom>
-                    Ticket {idTicket}
+                    {ticket.code}
                 </Typography>
 
                 {!formData
@@ -357,7 +357,7 @@ export const DetailTicket: React.FC<TicketFormProps> = ({ onSubmit }) => {
                     borderRadius: 2,
                 }}
             >
-                <CommentSection ticketId={ticket.id} ticketState={ticket.state} />
+                {!formData ? <p>cargando comentarios...</p> : <CommentSection ticketId={idTicket} ticketState={formData.state} />}
             </Paper>
 
         </>
