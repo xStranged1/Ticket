@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import {
-    Box, TextField, Typography, Button, Select, MenuItem, InputLabel, FormControl, Grid, IconButton, List, ListItem, ListItemText,
+    TextField, Typography, Button, Select, MenuItem, InputLabel, FormControl, Grid, IconButton, List, ListItem, ListItemText,
     Snackbar,
     Alert,
     SnackbarCloseReason,
@@ -14,7 +14,7 @@ import { format } from 'date-fns';
 import { getTicketByID } from "../services/ticketService";
 import { getAllCategories } from "../services/categoryService";
 import { dummyCategories } from "../const/dummyData";
-import { CommentSection } from "./createTicket/CommentSection";
+import { CommentSection } from "../components/CommentSection";
 
 interface TicketFormProps {
     onSubmit: (formData: {
@@ -163,7 +163,7 @@ export const DetailTicket: React.FC<TicketFormProps> = ({ onSubmit }) => {
                 </Snackbar>
 
                 <Typography variant="h5" sx={{ mb: 3, fontWeight: "bold" }} gutterBottom>
-                    {ticket.code}
+                    {formData?.code}
                 </Typography>
 
                 {!formData

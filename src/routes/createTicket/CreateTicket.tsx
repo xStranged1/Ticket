@@ -1,5 +1,4 @@
 import { Box, TextField, Typography, Button, Select, MenuItem, InputLabel, FormControl, Grid, IconButton, Paper, Snackbar, Alert, SnackbarCloseReason } from "@mui/material";
-import UploadFileIcon from "@mui/icons-material/UploadFile";
 import { createTicket } from "../../services/ticketService";
 import { BaseTicket, Category, matchPriority, Priority, PriorityDB } from "../../types/types";
 import { getAllCategories } from "../../services/categoryService";

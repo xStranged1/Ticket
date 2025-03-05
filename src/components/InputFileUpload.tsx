@@ -1,6 +1,7 @@
 import { styled } from '@mui/material/styles';
 import Button from '@mui/material/Button';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import { CloudDownload } from '@mui/icons-material';
 
 const VisuallyHiddenInput = styled('input')({
     clip: 'rect(0 0 0 0)',
@@ -14,7 +15,7 @@ const VisuallyHiddenInput = styled('input')({
     width: 1,
 });
 
-export default function InputFileUpload({ handleUploadFile }: { handleUploadFile: any }) {
+export default function InputFileUpload({ handleUploadFile, text, download }: { handleUploadFile: any, text?: string, download?: boolean }) {
 
     return (
         <Button
@@ -23,9 +24,9 @@ export default function InputFileUpload({ handleUploadFile }: { handleUploadFile
             role={undefined}
             variant="contained"
             tabIndex={-1}
-            startIcon={<CloudUploadIcon />}
+            startIcon={download ? <CloudDownload /> : <CloudUploadIcon />}
         >
-            Subir archivos
+            {text ?? "Subir archivos"}
             <VisuallyHiddenInput
                 type="file"
                 onChange={handleUploadFile}

@@ -84,5 +84,5 @@ export interface Comment {
     description: string,
     userId: number,
     requirementId: number
-    // files: File[]
+    files: FileList
 }
