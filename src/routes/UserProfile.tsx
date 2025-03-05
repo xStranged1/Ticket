@@ -195,21 +195,27 @@ const UserProfile: React.FC = () => {
                             />
                             <Divider sx={{ my: 2 }} />
 
-                            <Grid item xs={12} alignContent={"end"}>
-                                <Button variant="contained" color="error" onClick={() => navigate(`/tickets`)}>Cancelar</Button>
-                            </Grid>
 
-                            <Grid sx={{
+
+                            <div style={{
                                 display: 'flex', flexDirection: "row", justifyContent: 'space-between', alignItems: 'center', gap: 10
                             }}>
+                                <Button variant="contained" color="error"
+                                    sx={{
+                                        width: { xs: "100%" }
+                                    }}
+                                    style={{ width: 150 }}
+                                    onClick={() => navigate(`/tickets`)}>Cancelar</Button>
                                 <Button
                                     variant="contained"
+                                    style={{ width: 150 }}
                                     color={isEditing ? "success" : "primary"}
                                     onClick={toggleEditMode}
+
                                 >
                                     {isEditing ? "Guardar" : "Editar"}
                                 </Button>
-                            </Grid>
+                            </div>
 
                         </Box>
                     </Grid>

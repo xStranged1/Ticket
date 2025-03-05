@@ -19,7 +19,7 @@ export const matchState = {
 
 // ESTE TIPO ES IGUAL AL DTO DEL BACK
 export interface Type {
-    id: number, 
+    id: number,
     description: string,
     code: string, // 3 digitos
 }
@@ -81,7 +81,6 @@ export interface User {
 export interface Comment {
     id: number
     subject: string,
-    comment: string,
     description: string,
     userId: number,
     requirementId: number
