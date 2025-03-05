@@ -84,3 +84,16 @@ export const patchTicket = async (id: number, updatedFields: User) => {
         return false;
     }
 };
+
+export const downloadFiles = async (fileName: string) => {
+
+    try {
+        const response = await axiosClient.get(`/requirement-sv/api/requirements/files?fileName=${fileName}`);
+        if (response.status == 200) return response.data;
+        return false
+    } catch (error: any) {
+        console.log("error");
+        console.log(error);
+        return false
+    }
+}

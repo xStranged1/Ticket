@@ -11,11 +11,12 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { Category, matchPriority, matchState, Ticket } from "../types/types";
 import { format } from 'date-fns';
-import { getTicketByID, UpdateTicket } from "../services/ticketService";
+import { downloadFiles, getTicketByID, UpdateTicket } from "../services/ticketService";
 import { getAllCategories } from "../services/categoryService";
 import { dummyCategories } from "../const/dummyData";
 import { CommentSection } from "../components/CommentSection";
 import { patchTicket } from "../services/ticketService";
+import InputFileUpload from "../components/InputFileUpload";
 
 interface TicketFormProps {
     onSubmit: (formData: {
@@ -327,20 +328,6 @@ export const DetailTicket: React.FC<TicketFormProps> = ({ onSubmit }) => {
                             </FormControl>
                         </Grid>
 
-                        {/* Comentario */}
-                        <Grid item xs={12}>
-                            <TextField
-                                label="Comentario"
-                                name="comment"
-                                value={formData?.comment || ""}
-                                onChange={handleChange}
-                                fullWidth
-                                multiline
-                                rows={2}
-                                disabled={!isEditing}
-                            />
-                        </Grid>
-
                         {/* Archivos Adjuntos */}
                         <Grid item xs={12}>
                             <Button
@@ -358,18 +345,31 @@ export const DetailTicket: React.FC<TicketFormProps> = ({ onSubmit }) => {
                                 />
                             </Button>
                             <List>
-                                {(formData?.files || []).map((file, index) => (
-                                    <ListItem
-                                        key={index}
-                                        secondaryAction={
-                                            <IconButton edge="end" aria-label="delete" onClick={() => handleDeleteFile(index)} disabled={!isEditing}>
-                                                <DeleteIcon />
-                                            </IconButton>
-                                        }
-                                    >
-                                        <ListItemText primary={file.name} />
-                                    </ListItem>
-                                ))}
+                                {(formData?.files || []).map((file, index) => {
+                                    console.log("file");
+                                    if (file.endsWith("void.pdf")) return
+                                    return (
+                                        <div key={index}>
+                                            <div>
+                                                <Typography>Archivos adjuntos: {formData?.files?.length}</Typography>
+                                                <IconButton color="primary" component="label">
+                                                    <InputFileUpload handleUploadFile={downloadFiles} text="Descargar" download />
+                                                </IconButton>
+                                            </div>
+                                            <ListItem
+                                                key={index}
+                                                secondaryAction={
+                                                    <IconButton edge="end" aria-label="delete" onClick={() => handleDeleteFile(index)} disabled={!isEditing}>
+                                                        <DeleteIcon />
+                                                    </IconButton>
+                                                }
+                                            >
+                                                <ListItemText primary={file.name} />
+                                            </ListItem>
+                                        </div>
+                                    )
+                                }
+                                )}
                             </List>
                         </Grid>
 
