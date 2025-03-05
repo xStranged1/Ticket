@@ -1,16 +1,20 @@
 import { Box, TextField, Typography, Button, Select, MenuItem, InputLabel, FormControl, Grid, IconButton, Paper, Snackbar, Alert, SnackbarCloseReason } from "@mui/material";
 import { createTicket } from "../../services/ticketService";
-import { BaseTicket, Category, matchPriority, Priority, PriorityDB } from "../../types/types";
+import { BaseTicket, Category, matchPriority, Priority, PriorityDB, User } from "../../types/types";
 import { getAllCategories } from "../../services/categoryService";
 import { ChangeEvent, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { dummyCategories } from "../../const/dummyData";
 import voidPdf from '../../assets/void.pdf';
 import InputFileUpload from "../../components/InputFileUpload";
+import { getAllUsers } from "../../services/userService";
 
 export default function CreateTicket() {
+
     const [categories, setCategories] = useState<Category[]>([]);
+    const [users, setUsers] = useState<User[]>([]);
     const [selectedCategory, setSelectedCategory] = useState<Category | "">("");
+    const [selectedUser, setSelectedUser] = useState<User | "">("");
     const [prioridad, setPrioridad] = useState<Priority | "">("");
     const [subject, setSubject] = useState("");
     const [description, setDescription] = useState("");
@@ -22,6 +26,10 @@ export default function CreateTicket() {
 
     const handleCategoriesChange = (event: ChangeEvent<{ value: unknown }>) => {
         setSelectedCategory(event.target.value as Category);
+    };
+
+    const handleUserChange = (event: ChangeEvent<{ value: unknown }>) => {
+        setSelectedUser(event.target.value as User);
     };
 
     const handlePrioridadChange = (event: ChangeEvent<{ value: unknown }>) => {
@@ -49,6 +57,18 @@ export default function CreateTicket() {
             }
         };
         fetchCategories();
+    }, []);
+
+
+    useEffect(() => {
+        const fetchUsers = async () => {
+            const users = await getAllUsers();
+            if (users) {
+                setUsers(users.content);
+                return
+            }
+        };
+        fetchUsers();
     }, []);
 
     const handleClose = (
@@ -152,8 +172,20 @@ export default function CreateTicket() {
                             onChange={(text) => { setDescription(text.target.value) }}
                         />
                     </Grid>
-                    <Grid item xs={12}>
-                        <TextField label="Usuario destinatario" variant="outlined" fullWidth />
+                    <Grid item xs={6}>
+                        <FormControl fullWidth>
+                            <InputLabel id="users-label">Usuarios</InputLabel>
+                            <Select
+                                labelId="users-label"
+                                value={selectedUser ?? ''}
+                                onChange={handleUserChange}
+                                label="Usuario"
+                            >
+                                {users.map((user) => (
+                                    <MenuItem key={user.id} value={user}>{user.name}</MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
                     </Grid>
                     <Grid item xs={12}>
                         <TextField label="Relacionados" variant="outlined" fullWidth />
@@ -170,7 +202,6 @@ export default function CreateTicket() {
                                 {categories.map((category) => (
                                     <MenuItem key={category.id} value={category}>{category.description}</MenuItem>
                                 ))}
-
                             </Select>
                         </FormControl>
                     </Grid>

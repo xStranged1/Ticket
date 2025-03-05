@@ -11,3 +11,15 @@ export const getUserById = async (id: number) => {
         return false
     }
 }
+
+export const getAllUsers = async () => {
+    try {
+        const response = await axiosClient.get(`user-sv/api/v1/outside-users/active`);
+        if (response.status == 200) return response.data;
+        return false
+    } catch (error: any) {
+        console.log("error");
+        console.log(error);
+        return false
+    }
+}

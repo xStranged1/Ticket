@@ -11,7 +11,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { Category, matchPriority, matchState, Ticket } from "../types/types";
 import { format } from 'date-fns';
-import { getTicketByID } from "../services/ticketService";
+import { getTicketByID, UpdateTicket } from "../services/ticketService";
 import { getAllCategories } from "../services/categoryService";
 import { dummyCategories } from "../const/dummyData";
 import { CommentSection } from "../components/CommentSection";
@@ -124,19 +124,15 @@ export const DetailTicket: React.FC<TicketFormProps> = ({ onSubmit }) => {
 
     const handleConfirm = async () => {
         if (!formData) return;
-    
-        const updatedData = {
+
+        const updatedData: UpdateTicket = {
             subject: formData.subject,
             description: formData.description,
-            recipient: formData.recipient,
-            related: formData.related,
-            category: formData.category.description, // Ajusta según lo que necesite el backend
-            priority: Object.keys(matchPriority).find(key => matchPriority[key] === formData.priority),
-            date: formData.date,
-            time: formData.time,
-            state: Object.keys(matchState).find(key => matchState[key] === formData.state),
-            comment: formData.comment,
+            priority: formData.priority
+            // requirements: 
         };
+        console.log("updatedData");
+        console.log(updatedData);
 
         const success = await patchTicket(idTicket, updatedData);
         if (success) {
@@ -162,8 +158,8 @@ export const DetailTicket: React.FC<TicketFormProps> = ({ onSubmit }) => {
 
     return (
         <>
-            <Paper 
-                component="form" 
+            <Paper
+                component="form"
                 onSubmit={handleSubmit}
                 sx={{
                     width: "auto",
@@ -176,11 +172,11 @@ export const DetailTicket: React.FC<TicketFormProps> = ({ onSubmit }) => {
                 }}
             >
                 {/* Notificación Snackbar */}
-                <Snackbar 
-                    open={open} 
-                    autoHideDuration={6000} 
-                    onClose={handleClose} 
-                    anchorOrigin={{ vertical: 'top', horizontal: 'center' }} 
+                <Snackbar
+                    open={open}
+                    autoHideDuration={6000}
+                    onClose={handleClose}
+                    anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
                 >
                     <Alert
                         onClose={handleClose}
@@ -191,12 +187,12 @@ export const DetailTicket: React.FC<TicketFormProps> = ({ onSubmit }) => {
                         Se realizaron correctamente los cambios
                     </Alert>
                 </Snackbar>
-    
+
                 {/* Código del ticket */}
                 <Typography variant="h5" sx={{ mb: 3, fontWeight: "bold" }} gutterBottom>
                     {formData?.code || "Cargando..."}
                 </Typography>
-    
+
                 {!formData ? (
                     <p>Loading...</p>
                 ) : (
@@ -212,7 +208,7 @@ export const DetailTicket: React.FC<TicketFormProps> = ({ onSubmit }) => {
                                 disabled={!isEditing}
                             />
                         </Grid>
-    
+
                         {/* Descripción */}
                         <Grid item xs={12}>
                             <TextField
@@ -226,7 +222,7 @@ export const DetailTicket: React.FC<TicketFormProps> = ({ onSubmit }) => {
                                 disabled={!isEditing}
                             />
                         </Grid>
-    
+
                         {/* Usuario destinatario */}
                         <Grid item xs={12}>
                             <TextField
@@ -238,7 +234,7 @@ export const DetailTicket: React.FC<TicketFormProps> = ({ onSubmit }) => {
                                 disabled={!isEditing}
                             />
                         </Grid>
-    
+
                         {/* Relacionados */}
                         <Grid item xs={12}>
                             <TextField
@@ -250,7 +246,7 @@ export const DetailTicket: React.FC<TicketFormProps> = ({ onSubmit }) => {
                                 disabled={!isEditing}
                             />
                         </Grid>
-    
+
                         {/* Categoría */}
                         <Grid item xs={12} sm={6}>
                             <FormControl fullWidth disabled={!isEditing}>
@@ -263,34 +259,30 @@ export const DetailTicket: React.FC<TicketFormProps> = ({ onSubmit }) => {
                                     <MenuItem value={formData?.category?.description || ""}>
                                         {formData?.category?.description || "Seleccionar"}
                                     </MenuItem>
-                                    {categories.length > 0 && categories.map((category) => (
-                                        category.id !== formData?.category?.id && (
-                                            <MenuItem key={category.id} value={category.description}>
-                                                {category.description}
-                                            </MenuItem>
-                                        )
+                                    {categories.map((category) => (
+                                        <MenuItem key={category.id} value={category}>{category.description}</MenuItem>
                                     ))}
                                 </Select>
                             </FormControl>
                         </Grid>
-    
+
                         {/* Prioridad */}
                         <Grid item xs={12} sm={6}>
                             <FormControl fullWidth disabled={!isEditing}>
                                 <InputLabel>Prioridad</InputLabel>
                                 <Select
                                     name="priority"
-                                    value={Object.keys(matchPriority).find(key => matchPriority[key] === formData?.priority) || ""}
+                                    value={formData.priority ?? ""}
                                     onChange={handleChange}
                                 >
-                                    <MenuItem value="Urgente">Urgente</MenuItem>
-                                    <MenuItem value="Alta">Alta</MenuItem>
-                                    <MenuItem value="Media">Media</MenuItem>
-                                    <MenuItem value="Baja">Baja</MenuItem>
+                                    <MenuItem value="URGENT">Muy alta</MenuItem>
+                                    <MenuItem value="HIGH">Alta</MenuItem>
+                                    <MenuItem value="MEDIUM">Media</MenuItem>
+                                    <MenuItem value="LOW">Baja</MenuItem>
                                 </Select>
                             </FormControl>
                         </Grid>
-    
+
                         {/* Fecha */}
                         <Grid item xs={12} sm={6}>
                             <TextField
@@ -304,7 +296,7 @@ export const DetailTicket: React.FC<TicketFormProps> = ({ onSubmit }) => {
                                 disabled={!isEditing}
                             />
                         </Grid>
-    
+
                         {/* Hora */}
                         <Grid item xs={12} sm={6}>
                             <TextField
@@ -318,7 +310,7 @@ export const DetailTicket: React.FC<TicketFormProps> = ({ onSubmit }) => {
                                 disabled={!isEditing}
                             />
                         </Grid>
-    
+
                         {/* Estado */}
                         <Grid item xs={12} sm={6}>
                             <FormControl fullWidth disabled={!isEditing}>
@@ -334,7 +326,7 @@ export const DetailTicket: React.FC<TicketFormProps> = ({ onSubmit }) => {
                                 </Select>
                             </FormControl>
                         </Grid>
-    
+
                         {/* Comentario */}
                         <Grid item xs={12}>
                             <TextField
@@ -348,7 +340,7 @@ export const DetailTicket: React.FC<TicketFormProps> = ({ onSubmit }) => {
                                 disabled={!isEditing}
                             />
                         </Grid>
-    
+
                         {/* Archivos Adjuntos */}
                         <Grid item xs={12}>
                             <Button
@@ -380,7 +372,7 @@ export const DetailTicket: React.FC<TicketFormProps> = ({ onSubmit }) => {
                                 ))}
                             </List>
                         </Grid>
-    
+
                         {/* Botones */}
                         <Grid item xs={12} sm={3}>
                             <Button variant="contained" color="error" fullWidth onClick={() => navigate(`/tickets`)}>Volver</Button>
@@ -397,7 +389,7 @@ export const DetailTicket: React.FC<TicketFormProps> = ({ onSubmit }) => {
                     </Grid>
                 )}
             </Paper>
-    
+
             {/* Comentarios */}
             <Paper
                 sx={{
@@ -414,4 +406,4 @@ export const DetailTicket: React.FC<TicketFormProps> = ({ onSubmit }) => {
             </Paper>
         </>
     );
-    
+}
