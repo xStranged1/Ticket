@@ -283,6 +283,7 @@ export const DetailTicket: React.FC<TicketFormProps> = ({ onSubmit }) => {
                                     <MenuItem value="HIGH">Alta</MenuItem>
                                     <MenuItem value="MEDIUM">Media</MenuItem>
                                     <MenuItem value="LOW">Baja</MenuItem>
+                                    <MenuItem value="SUPER_LOW">Muy baja</MenuItem>
                                 </Select>
                             </FormControl>
                         </Grid>

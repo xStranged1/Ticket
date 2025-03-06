@@ -221,6 +221,7 @@ export default function CreateTicket() {
                                 <MenuItem value="Alta">Alta</MenuItem>
                                 <MenuItem value="Media">Media</MenuItem>
                                 <MenuItem value="Baja">Baja</MenuItem>
+                                <MenuItem value="Muy baja">Muy baja</MenuItem>
 
                             </Select>
                         </FormControl>

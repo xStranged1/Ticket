@@ -147,7 +147,6 @@ function EnhancedTableToolbar() {
                     variant="h6"
                     id="tableTitle"
                 >
-                    Administrador
                 </Typography>
             </a>
 

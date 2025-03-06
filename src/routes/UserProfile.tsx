@@ -214,7 +214,7 @@ const UserProfile: React.FC = () => {
                                         width: { xs: "100%" }
                                     }}
                                     style={{ width: 150 }}
-                                    onClick={() => navigate(`/tickets`)}>Cancelar</Button>
+                                    onClick={() => navigate(`/tickets`)}>Volver</Button>
                                 <Button
                                     variant="contained"
                                     style={{ width: 150 }}
